@@ -1,0 +1,1379 @@
+<!--
+  game_explained.html
+
+  This file is a line-by-line explained copy of the original `game.html`.
+  Each important line or small group of lines has a short, easy-to-understand
+  explanation directly above it. Vocabulary definitions appear first so you can
+  read them once and then see how they are used below.
+
+  Vocabulary definitions (each sentence is simple and full):
+  - HTML is the language that defines the structure of a web page, like the
+    bones of a page that say what pieces are present.
+  - A tag is a markup symbol like <div> or <p> that creates elements on a page.
+  - An attribute is extra information on a tag (like id or class) that gives
+    the browser and code a way to find and style that element.
+  - CSS is the language that controls how the page looks, like colors, sizes,
+    and spacing. It is separate from the structure.
+  - A class is a reusable label that you can put on many elements to give them
+    the same style or behavior. Classes are used in CSS with a dot, like `.btn`.
+  - An id is a unique name for a single element so scripts or styles can find it
+    easily. IDs are used with a hash, like `#start-screen`.
+  - JavaScript is the language that adds interactivity to the page, like
+    responding to clicks and running the game's logic.
+  - A variable is a named place where the program stores a value it can read
+    or change later, like `let score = 0;`.
+  - A function is a named block of code that does a task when you call it.
+  - An array is an ordered list of items stored together, and you access items
+    by their position number (index) starting at 0.
+  - An object is a collection of related data in name:value pairs, like
+    `{ id: 1, name: 'Level 1' }`.
+  - Event means something that happens on the page, such as a button click.
+  - Callback is a function given to run later when an event happens, like a
+    function that runs when a button is pressed.
+  - DOM stands for Document Object Model and it means the page elements that
+    JavaScript can find and change.
+  - `innerText` is a way to put plain text inside an element so people can read it.
+  - `innerHTML` is a way to put HTML content (which can include tags) inside an element.
+  - `dataset` is a place where you can store small custom values on any element
+    so your script can remember them across steps.
+  - `getBoundingClientRect()` is a method that tells you where an element is on
+    the screen and how big it is, measured in pixels.
+  - `requestAnimationFrame()` is a browser tool that calls a function many
+    times per second to create smooth animations that match the screen update rate.
+-->
+
+<!DOCTYPE html>
+<!-- This line tells the browser the document is HTML5 so it knows how to read it. -->
+<html lang="en">
+<!-- This <html> tag wraps the whole page content and sets the language to English. -->
+
+<head>
+    <!-- The <head> holds metadata and resources for the page, not the visible game area. -->
+    <meta charset="UTF-8">
+    <!-- This tells the browser to use the UTF-8 character set so emojis and special characters work. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- This makes the page scale properly on different screen sizes like phones and tablets. -->
+    <title>The Lost Time Traveler: Quest for the Mystic Gem</title>
+    <!-- The <title> text shows on the browser tab and describes the page. -->
+    <style>
+        /* The <style> block contains CSS that controls the page appearance. */
+
+        :root {
+            /* CSS variables hold colors and values used across the file for consistency. */
+            --bg-color: #2c003e; /* A dark purple background color used as a base. */
+            --text-color: #fff; /* White text color for contrast. */
+            --accent: #00ffcc; /* Bright teal accent color used for borders and highlights. */
+            --accent-secondary: #ff00ff; /* A magenta accent used for special panels. */
+            --panel-bg: rgba(0, 0, 0, 0.9); /* Semi-opaque black used for dialog panels. */
+        }
+
+        body {
+            margin: 0; /* Remove browser default page margins so layout is exact. */
+            font-family: 'Courier New', Courier, monospace; /* Choose a monospace font for a retro look. */
+            background-color: var(--bg-color); /* Apply the root background color. */
+            color: var(--text-color); /* Set the default text color. */
+            overflow: hidden; /* Prevent page scrolling so game fits inside the container. */
+            display: flex; /* Use flexbox to center the main game container. */
+            justify-content: center; /* Center horizontally. */
+            align-items: center; /* Center vertically. */
+            height: 100vh; /* Make the page height equal to the browser window height. */
+            background: linear-gradient(135deg, #1a0b2e 0%, #4a148c 100%); /* Nice gradient backdrop behind the container. */
+        }
+
+        #game-container {
+            /* This is the main box of the game where all screens appear. */
+            position: relative; /* Position children absolutely relative to this container. */
+            width: 900px; /* Fixed width of the game area. */
+            height: 600px; /* Fixed height of the game area. */
+            border: 4px solid var(--accent); /* Decorative border using the accent color. */
+            border-radius: 15px; /* Rounded corners for the container. */
+            background-image: url('stardust.png'); /* Background image if the file exists. */
+            background-color: #000; /* Fallback background color if the image fails. */
+            overflow: hidden; /* Hide anything that goes outside the box. */
+            box-shadow: 0 0 20px var(--accent); /* Glow effect matching the accent color. */
+        }
+
+        /* UI Elements */
+        #hud {
+            /* HUD is the top bar that shows level and inventory. */
+            position: absolute; /* Place it on top of the game container. */
+            top: 0; /* Stick to the top edge. */
+            left: 0; /* Stick to the left edge. */
+            width: 100%; /* Span the whole container width. */
+            padding: 10px; /* Space inside the HUD. */
+            display: flex; /* Layout items horizontally. */
+            justify-content: space-between; /* Put level text on the left and inventory on the right. */
+            background: rgba(0, 0, 0, 0.6); /* Slightly transparent black background. */
+            box-sizing: border-box; /* Make padding count inside the width. */
+            z-index: 10; /* Keep HUD above many other elements. */
+        }
+
+        #inventory-box {
+            display: flex; /* Inventory items line up horizontally. */
+            gap: 5px; /* Small gap between item slots. */
+        }
+
+        .item-slot {
+            width: 30px; /* Fixed size for each inventory slot. */
+            height: 30px; /* Fixed height. */
+            border: 1px solid #555; /* Dark border to separate slots. */
+            display: flex; /* Use flex to center the emoji inside. */
+            justify-content: center; /* Center horizontally. */
+            align-items: center; /* Center vertically. */
+            background: #222; /* Dark background for slot. */
+            font-size: 20px; /* Large emoji size to fit slot. */
+        }
+
+        /* Screens */
+        .screen {
+            /* `.screen` styles apply to each main full-area screen like start, study, and game. */
+            position: absolute; /* Stack them on top of each other in the same container area. */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Use flex layout to center content within a screen by default. */
+            flex-direction: column; /* Stack content top-to-bottom inside a screen. */
+            justify-content: center; /* Center content vertically. */
+            align-items: center; /* Center content horizontally. */
+            text-align: center; /* Center text inside the screen. */
+            padding: 20px; /* Add inner padding. */
+            box-sizing: border-box; /* Make padding count inside the width. */
+            transition: opacity 0.5s; /* Smooth fade effect if opacity changes. */
+            background: rgba(0, 0, 0, 0.8); /* Dark overlay to make text readable. */
+            z-index: 5; /* Ensure screens are above the base scene but below the HUD. */
+        }
+
+        .hidden {
+            display: none !important; /* Utility class to hide an element completely. */
+        }
+
+        /* Start Screen */
+        #start-screen h1 {
+            font-size: 40px; /* Big title font size. */
+            color: var(--accent); /* Use the accent color for the title. */
+            text-shadow: 0 0 10px var(--accent); /* Add glow to the title. */
+            margin-bottom: 10px; /* Space below the title. */
+        }
+
+        .btn {
+            background: var(--accent); /* Button background uses accent color. */
+            color: #000; /* Dark text color on the bright button. */
+            border: none; /* Remove default border. */
+            padding: 15px 30px; /* Comfortable clickable area. */
+            font-size: 18px; /* Readable button text size. */
+            cursor: pointer; /* Show pointer cursor on hover. */
+            font-weight: bold; /* Emphasize the label. */
+            margin-top: 20px; /* Space above the button. */
+            border-radius: 5px; /* Slightly rounded corners. */
+            transition: transform 0.2s, background 0.2s; /* Smooth hover effects. */
+            text-transform: uppercase; /* Make the button text uppercase. */
+            letter-spacing: 2px; /* Slight spacing between letters. */
+        }
+
+        .btn:hover {
+            transform: scale(1.05); /* Slightly enlarge on hover. */
+            background: #fff; /* Lighten the button when hovered. */
+        }
+
+        /* Study Screen (New) */
+        #study-screen {
+            justify-content: flex-start; /* Start content at the top instead of center. */
+            padding-top: 40px; /* Extra space at the top for heading and logs. */
+        }
+
+        #study-content {
+            width: 90%; /* Most of the screen width is used for logs. */
+            height: 75%; /* Tall log area. */
+            background: #111; /* Dark background for the log area. */
+            border: 2px solid var(--accent-secondary); /* Magenta border to stand out. */
+            overflow-y: scroll; /* Allow vertical scrolling if text is long. */
+            text-align: left; /* Left-align the log text for readability. */
+            padding: 20px; /* Inner padding for text. */
+            box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.2); /* Inner glow effect. */
+        }
+
+        .log-entry {
+            margin-bottom: 30px; /* Space between log entries. */
+            border-bottom: 1px dashed #555; /* Visual separator. */
+            padding-bottom: 20px; /* Space under each entry. */
+        }
+
+        .log-entry h3 {
+            color: var(--accent); /* Accent color for log headings. */
+            margin-top: 0; /* Remove default top margin so heading sits flush. */
+        }
+
+        .log-entry p {
+            font-size: 14px; /* Smaller paragraph text inside logs. */
+            line-height: 1.6; /* Comfortable line spacing for reading. */
+            color: #ddd; /* Light gray text for contrast but softer than white. */
+        }
+
+        /* Gameplay Visuals */
+        #game-scene {
+            background-size: cover; /* Background image should cover the area. */
+            position: relative; /* Allow absolutely positioned children. */
+            z-index: 1; /* Base scene behind screens. */
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px); /* Start at original position. */
+            }
+
+            50% {
+                transform: translateY(-20px); /* Move up a bit halfway through. */
+            }
+
+            100% {
+                transform: translateY(0px); /* Return to original position. */
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            10% {
+                transform: translate(-1px, -2px) rotate(-1deg);
+            }
+
+            20% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+
+            30% {
+                transform: translate(3px, 2px) rotate(0deg);
+            }
+
+            40% {
+                transform: translate(1px, -1px) rotate(1deg);
+            }
+
+            50% {
+                transform: translate(-1px, 2px) rotate(-1deg);
+            }
+
+            60% {
+                transform: translate(-3px, 1px) rotate(0deg);
+            }
+
+            70% {
+                transform: translate(3px, 1px) rotate(-1deg);
+            }
+
+            80% {
+                transform: translate(-1px, -1px) rotate(1deg);
+            }
+
+            90% {
+                transform: translate(1px, 2px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        .character {
+            font-size: 100px; /* Large emoji size for characters like Mac and dragon. */
+            position: absolute; /* Position characters absolutely inside the scene. */
+            bottom: 200px; /* Place characters above the dialog box at the bottom. */
+            transition: left 1s; /* Smooth movement when the left position changes. */
+        }
+
+        #mac {
+            left: 50px; /* Mac starts at 50 pixels from the left. */
+            animation: float 3s infinite ease-in-out; /* Mac gently floats up and down. */
+            filter: drop-shadow(0 0 10px cyan); /* Soft glow under Mac. */
+        }
+
+        #opponent {
+            right: 50px; /* Opponent starts from the right side. */
+            filter: drop-shadow(0 0 10px red); /* Red glow for the opponent. */
+        }
+
+        #dragon {
+            right: -300px; /* Dragon starts off-screen to the right. */
+            font-size: 180px; /* Larger size because the boss is big. */
+            filter: drop-shadow(0 0 20px orange); /* Orange glow for the dragon. */
+            transition: right 1s; /* Smooth slide-in when the 'right' property changes. */
+        }
+
+        /* Dialog/Quiz Box */
+        #dialog-box {
+            position: absolute; /* Place dialog box above the bottom of the scene. */
+            bottom: 10px; /* Keep a small margin from the bottom edge. */
+            left: 50%; /* Center dialog horizontally using transforms. */
+            transform: translateX(-50%); /* Exactly center the box. */
+            width: 90%; /* Use most of the width for dialog text. */
+            background: var(--panel-bg); /* Apply the semi-opaque panel background. */
+            border: 2px solid var(--accent); /* Accent border adds visual separation. */
+            padding: 20px; /* Inner padding for text and buttons. */
+            border-radius: 10px; /* Rounded corners for the dialog. */
+            min-height: 120px; /* Reserve minimum space so content doesn't overlap. */
+        }
+
+        #speaker-name {
+            color: var(--accent); /* Speaker name in the accent color for emphasis. */
+            font-weight: bold; /* Make the name bold to stand out. */
+            margin-bottom: 10px; /* Space between the name and dialog text. */
+        }
+
+        #dialog-text {
+            font-size: 18px; /* Slightly larger text for readability. */
+            line-height: 1.4; /* Comfortable spacing between lines. */
+        }
+
+        #choices-container {
+            display: flex; /* Layout choices in a row or wrap. */
+            flex-wrap: wrap; /* Allow choices to wrap to the next line if needed. */
+            gap: 10px; /* Space between choice buttons. */
+            margin-top: 15px; /* Space above the choices. */
+            justify-content: center; /* Center the choices horizontally. */
+        }
+
+        .choice-btn {
+            background: #444; /* Gray background for choice buttons. */
+            color: #fff; /* White text on dark buttons. */
+            border: 1px solid #777; /* Slight border for contrast. */
+            padding: 10px; /* Clickable padding. */
+            cursor: pointer; /* Pointer cursor for clickable element. */
+            flex: 1 1 40%; /* Flexible sizing so buttons grow/shrink but take ~40% width. */
+            font-family: inherit; /* Use the same font as the page. */
+        }
+
+        .choice-btn:hover {
+            background: #666; /* Lighten buttons when hovered for feedback. */
+        }
+
+        /* Boss Effects */
+        .dragon-shake {
+            animation: shake 0.5s; /* Play the shake animation for a short hit effect. */
+        }
+
+        /* Victory Elements */
+        #final-treasures-container {
+            margin-top: 20px; /* Space above the treasure area. */
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent container for treasures. */
+            padding: 15px; /* Inner padding for treasures. */
+            border-radius: 10px; /* Rounded corners. */
+            border: 1px solid var(--accent); /* Accent border to match theme. */
+        }
+
+        #final-treasures {
+            display: flex; /* Show treasure items in a row. */
+            flex-wrap: wrap; /* Allow multiple rows of treasures if needed. */
+            gap: 10px; /* Space between treasures. */
+            justify-content: center; /* Center treasures horizontally. */
+            max-width: 500px; /* Limit the width so layout stays tidy. */
+        }
+
+        .final-item {
+            font-size: 35px; /* Big emoji size for treasures. */
+            animation: float 2s infinite; /* Floating animation for each treasure. */
+        }
+
+        /* Spaceship Animation Elements - adjusted for visibility & arc landing on planet */
+        .scene-space {
+            position: relative; /* Child elements are placed relative to this block. */
+            width: 100%;
+            height: 360px; /* Tall area for ship and planet visuals. */
+            margin-bottom: 20px; /* Space below this scene. */
+            overflow: visible; /* Allow the ship to extend outside the scene if needed. */
+            border-bottom: 1px solid #333; /* Decorative bottom border. */
+            pointer-events: none; /* Disable pointer interactions for decorative elements. */
+            box-sizing: border-box; /* Include padding inside width calculations. */
+            padding: 10px 20px; /* Inner padding. */
+        }
+
+        .scene-space {
+            --planet-emoji-size: 90px; /* CSS variable to keep planet and ship the same scale. */
+            /* central size variable for planet & ship */
+            position: relative;
+            width: 100%;
+            height: 360px;
+            margin-bottom: 20px;
+            overflow: visible;
+            border-bottom: 1px solid #333;
+            pointer-events: none;
+            box-sizing: border-box;
+            padding: 10px 20px;
+        }
+
+        #home-planet {
+            font-size: var(--planet-emoji-size); /* Large emoji for the planet. */
+            /* reduced size */
+            position: absolute; /* Position planet inside the scene. */
+            top: 18px; /* Slightly from the top. */
+            right: 60px; /* Place planet from the right edge so ship can land near it. */
+            /* nudged left so ship can land visually on it */
+            filter: drop-shadow(0 0 18px blue); /* Blue glow effect around planet. */
+            z-index: 2; /* Put planet above background elements. */
+            transform: translateZ(0); /* Improve rendering performance on some browsers. */
+            pointer-events: none; /* Make the planet decorative, not clickable. */
+            line-height: 1; /* Keep the emoji vertically centered. */
+        }
+
+        /* Make the ship start from the lower-left of the scene-space and end near the home-planet
+           Set ship size to match the planet by using the same variable. */
+        #mac-spaceship {
+            position: absolute; /* Position the spaceship inside the scene. */
+            bottom: 20px; /* Place it near the bottom of the scene. */
+            left: 20px; /* Start near the left side. */
+            font-size: var(--planet-emoji-size); /* Make ship size match the planet size variable. */
+            display: flex; /* Allow inner content like the little Mac to position easily. */
+            align-items: center; /* Center children vertically inside the ship element. */
+            justify-content: center; /* Center children horizontally inside the ship. */
+            transform-origin: center bottom; /* If rotated or scaled, use the bottom center as pivot. */
+            will-change: transform; /* Hint to browser that transform will change for smoother animation. */
+            z-index: 6; /* Put ship above the planet so it appears to land on top. */
+            transform-style: preserve-3d; /* Keep 3D transforms working as expected. */
+            pointer-events: none; /* Decorative, not interactive. */
+            line-height: 1; /* Keep emoji aligned properly. */
+        }
+
+        /* scale and position the little Mac inside the ship so it fits nicely when ship size changes */
+        #mac-in-ship {
+            position: absolute; /* Place the little mac emoji inside the ship container. */
+            font-size: calc(var(--planet-emoji-size) * 0.48); /* Make the Mac smaller than the ship proportionally. */
+            z-index: 7; /* Ensure Mac is above ship visuals. */
+            top: 16px; /* Position Mac inside the ship. */
+            left: 22px; /* Position Mac inside the ship. */
+            pointer-events: none; /* Not interactive. */
+            line-height: 1; /* Keep emoji centered. */
+        }
+
+        /* One-way horizontal "fly and land" animation. Final keyframe holds the ship at the planet. */
+        .blast-off {
+            animation: flyHomeHoriz 2.2s cubic-bezier(.2, .8, .2, 1) forwards; /* Play the keyframe animation once and stay in the last position. */
+        }
+
+        /* Keyframes move mostly horizontally toward the home-planet and then settle.
+           The animation uses percentage-based transforms so it ends and stays at the final position. */
+        @keyframes flyHomeHoriz {
+            0% {
+                transform: translateX(0) translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            40% {
+                /* start moving right */
+                transform: translateX(45%) translateY(0) scale(0.97) rotate(-4deg);
+            }
+
+            70% {
+                /* approach the planet */
+                transform: translateX(72%) translateY(0) scale(0.90) rotate(2deg);
+            }
+
+            90% {
+                /* slight bounce/settle */
+                transform: translateX(78%) translateY(-6px) scale(0.88) rotate(0deg);
+            }
+
+            100% {
+                /* final horizontal landed position (animation ends and stays here) */
+                transform: translateX(78%) translateY(0) scale(0.86) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px; /* Style width of scrollbars in WebKit browsers. */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000; /* Dark track behind the scrollbar thumb. */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent); /* Colored thumb for consistency with theme. */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- The main game container holds HUD, screens, and scenes. -->
+    <div id="game-container">
+
+        <!-- HUD is hidden initially and shown when the game starts. -->
+        <div id="hud" class="hidden">
+            <div>Level: <span id="level-display">1</span></div>
+            <!-- `level-display` shows the current level number. -->
+            <div id="inventory-box">
+            </div>
+            <!-- `inventory-box` is where collected item slots appear. -->
+        </div>
+
+        <!-- START SCREEN: Title and button to open mission logs. -->
+        <div id="start-screen" class="screen">
+            <h1>Quest for the Mystic Gem</h1>
+            <!-- Big title visible on the start screen. -->
+            <p style="max-width: 600px;">Mac, a time traveler, has crashed on an alien planet! To repair the ship and go
+                home, Mac needs to find the Mystic Gem. You must use your knowledge of Earth's history to unlock the
+                path and help Mac. Review the mission logs carefully.</p>
+            <!-- Short instructions that invite the player to read mission logs. -->
+            <br>
+            <button class="btn" onclick="game.showLogs()">📂 Open Mission Logs</button>
+            <!-- Button calls `game.showLogs()` when clicked so the script can show the logs screen. -->
+        </div>
+
+        <!-- STUDY SCREEN: The mission logs with historical content. -->
+        <div id="study-screen" class="screen hidden">
+            <h2 style="color: var(--accent-secondary)">MISSION LOGS: EARTH HISTORY - WORLD WAR II</h2>
+            <p>The Alien Guardians will test you on this.</p>
+
+            <div id="study-content">
+                <!-- Multiple `log-entry` blocks follow with headings and paragraphs. -->
+                <div class="log-entry">
+                    <h3>1. World War II</h3>
+                    <p>World War II started September 1st, 1939, and ended September 2nd, 1945. Around 70-85 million
+                        people died, most of whom were civilians. However, the Soviet Union and China lost the most
+                        citizens. There were two big sides to this devastating battle- the Allied Powers and the Axis
+                        Powers. The Allied Powers were mainly made up of the United States, the United Kingdom, the
+                        Soviet Union, China, and France, while the Axis Powers were primarily made up of Germany, Italy,
+                        and Japan. Some of the causes of World War II were when Germany invaded Poland on September 1st,
+                        1939, when Hitler got bolder and more aggressive by consistently being able to expand German
+                        territory in Britain and France’s hopes to avoid a potential war, fascism and militarism
+                        surfacing more and more, and the Treaty of Versailles. It was one of the deadliest fights in
+                        history, but it did lead to a peace-making establishment being founded, also known as the United
+                        Nations.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>2. Cold War</h3>
+                    <p>The Cold War began around 1947 and lasted all the way to 1991. The Western Bloc and the Eastern
+                        Bloc fought, but it is thought that the war was fought between the United States, the Soviet
+                        Union and their partners. When you think of the Cold War, some of the things that come to mind
+                        are nuclear weapons and the race to explore outer space.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>3. Bombing on Pearl Harbor</h3>
+                    <p>The bombing on Pearl Harbor happened on December 7th, 1941, starting at 7:55 a.m. Hawaii time.
+                        353 aircraft launched from 6 aircraft carriers performed the attack. They had surface ships and
+                        submarines as backup. 2403 Americans were killed, and 1178 more were wounded. They
+                        damaged/destroyed almost 20 American naval vessels and over 300 airplanes. Japan’s losses,
+                        however, were limited to 29 aircrafts and 5 midget submarines destroyed, and 129 personnel were
+                        killed. The next day, the United States declared war on Japan. On December 11th, 1941, Germany
+                        and Italy, who were on Japan’s side, declared war on the United States.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>4. Founding of United Nations</h3>
+                    <p>The United Nations was founded October 24th, 1945. The Security council, made up of China,
+                        France, the Soviet Union, the United Kingdom, and the United States officialized the UN charter
+                        on this day. We now celebrate October 24th annually as United Nations Day. The goal of this
+                        organization is to maintain international peace, develop friendly connections and cooperation
+                        between the countries, and to be a place in which you can fuse the actions of the nations into
+                        solutions for worldwide issues and goals.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>5. Franklin D. Roosevelt Death</h3>
+                    <p>Franklin D. Roosevelt, our 32nd president (1933-1945) who led us through the Great Depression and
+                        World War II and who is famous for his New Deal Programs, sadly died on April 12th, 1945, at 63
+                        years old. His passing took place in Warm Springs, Georgia, after a severe stroke. He was in his
+                        personal getaway when this happened, the “Little White House”. Roosevelt sought therapeutic
+                        treatment for his paralytic illness, which was believed to be polio. He was sitting in the
+                        living room as artist Elizabeth Shoumatoff was painting his portrait. At approximately 1:00
+                        p.m., he said he had a “terrific headache” and then collapsed, losing consciousness. His health
+                        had been fading for a while, with hypertension and heart problems. These conditions had been
+                        kept from the public. He was pronounced dead at 3:35 p.m. Harry S. Truman, who had only been
+                        vice president for 82 days, was sworn in as the 33rd president of the United States the same day
+                        in Washington D.C. after being informed by Eleanor Roosevelt’s wife, Eleanor Roosevelt. His
+                        death shocked the nation and world. Many Americans had never had another president. He was
+                        buried in the Rose Garden of his family’s estate in Hyde Park, New York, on April 15th, 1945.
+                    </p>
+                </div>
+                <div class="log-entry">
+                    <h3>6. Servicemen’s Readjustment Act (G.I. Bill)</h3>
+                    <p>The Servicemen’s Readjustment Act, also known as the G.I. Bill, was signed by President Franklin
+                        D. Roosevelt on June 22nd,1944. The law provided benefits to soldiers returning from World War
+                        II. It allowed them to settle back into normal civilian life. The bill offered financial aid for
+                        education, low-interest homes and farms backed by the government, business loans, and
+                        unemployment compensation of $20.00 per week for as long as 52 weeks. The act also allowed
+                        additional hospital facilities to be constructed and stretched the means of medical care to
+                        veterans. However, Black veterans often faced discrimination in their applications.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>7. Executive Order 8802</h3>
+                    <p>Executive Order 8802 was signed by President Franklin D. Roosevelt on June 25th, 1941. It banned
+                        discrimination based on race and ethnicity in the national defense industry and government
+                        employment. A. Philip Randolph and other civil rights leaders put pressure on Roosevelt to issue
+                        the order. He threatened a mass march of 100,000 African Americans, which would have caused
+                        international embarrassment due to having such a protest during wartime. African Americans
+                        raised their numbers in the defense industry by 5% by 1945 and tripled the number of Black
+                        workers in the federal workforce. It was the 1st federal action that clearly conserved the
+                        rights of African Americans since the Reconstruction Era.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>8. Indian Independence Act</h3>
+                    <p>The Indian Independence Act helped India and Pakistan gain independence from the British.
+                        Pakistan gained independence on August 14, 1947, while India gained independence just the next
+                        day. This was a decision made by Britain because of financial difficulties after war and
+                        communal violence in India growing. The division of religious lines led to one of the largest
+                        mass migrations known to man. An estimated 12-20 million people were displaced and an estimated
+                        several hundred thousand-two million people killed in widespread communal violence. The
+                        Partition created extreme hostility and aggression between India and Pakistan. This influences
+                        their relationship today, especially over the land of Kashmir.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>9. Israel Established</h3>
+                    <p>The State of Israel was officially founded and declared independent on May 14th, 1948, in Tel
+                        Aviv the same day the British Mandate over Palestine was supposed to expire. This declaration
+                        was made by David Ben-Gurion, who was the head of the World Zionist Organization and the Jewish
+                        Agency for Palestine. He would later become Israel’s first Prime Minister. The United States
+                        (then led by Harry S. Truman) recognized the state just eleven minutes after their declaration,
+                        and the Soviet Union followed a bit after. Unfortunately, the first Arab-Israeli war started
+                        immediately after the declaration when neighboring Arab states Egypt, Transjordan, Syria,
+                        Lebanon and Iraq’s armies invaded Israel, with the battle lasting several months. As an outcome,
+                        the new state secured its existence and established its temporary boundaries (a.k.a. the Green
+                        Line). Israel became a member of the United Nations on May 11, 1949.</p>
+                </div>
+                <div class="log-entry">
+                    <h3>10. Adolf Hitler Suicide</h3>
+                    <p>: Adolf Hitler committed suicide on April 30th,1945 with a gunshot wound to the head in his
+                        underground bunker (the Fuhrerbunker) in Berlin, Germany. His wife, Eva Braun, died with him by
+                        ingesting a cyanide capsule. They were wed for only one day. He wanted to avoid capture,
+                        especially after he learned that his ally, Benito Mussolini, was executed and publicly displayed
+                        after death. Earlier, he had given his dog Blondi cyanide and watched him die instantly. He
+                        likely did both- biting into a cyanide capsule while simultaneously shooting himself in the head
+                        with a Walther PPK pistol. Following Hitler’s instructions, his and his wife’s bodies were
+                        burned in order to not get capture and desecrated by the Soviets. Soviet forces later recovered
+                        the dental remains and released conflicting information about Hitler’s death. This resulted in
+                        conspiracy theories being made for decades, until the scientific analysis in the 21st century
+                        proved his death in the bunker. His death was announced on German radio on May 1st, and Germany
+                        officially surrendered to the Allies a week later on May 8th, 1945.</p>
+                </div>
+            </div>
+
+            <button class="btn" style="margin-top: 15px;" onclick="game.init()">🚀 Launch Mission</button>
+            <!-- This button calls `game.init()` to hide logs and start the gameplay. -->
+        </div>
+
+        <!-- GAME SCENE: Actual gameplay area with characters and dialog box. -->
+        <div id="game-scene" class="screen hidden">
+            <div id="mac" class="character">👽</div>
+            <!-- `#mac` holds the player character emoji. -->
+            <div id="opponent" class="character"></div>
+            <!-- `#opponent` will be filled with opponent HTML by JavaScript. -->
+            <div id="dragon" class="character">🐉</div>
+            <!-- `#dragon` is the boss character that starts off-screen. -->
+
+            <div id="dialog-box">
+                <div id="speaker-name">Mac</div>
+                <!-- `#speaker-name` shows who is speaking. -->
+                <div id="dialog-text">...</div>
+                <!-- `#dialog-text` displays the question or dialog text. -->
+                <div id="choices-container"></div>
+                <!-- `#choices-container` will hold answer buttons added by JavaScript. -->
+            </div>
+        </div>
+
+        <!-- VICTORY SCREEN: Shown when player wins. -->
+        <div id="victory-screen" class="screen hidden" style="justify-content: flex-start; padding-top: 50px;">
+            <div class="scene-space">
+                <div id="home-planet">🪐</div>
+                <div id="mac-spaceship">
+                    🚀
+                    <div id="mac-in-ship">👽</div>
+                </div>
+            </div>
+
+            <h1 style="font-size: 50px; color: var(--accent); margin: 0;">MISSION SUCCESS!</h1>
+            <p>Mac is headed home to the 5th Dimension thanks to your history knowledge!</p>
+
+            <div id="final-treasures-container">
+                <h3 style="margin-top:0">Treasures Collected:</h3>
+                <div id="final-treasures">
+                </div>
+            </div>
+            <button class="btn" onclick="location.reload()">Play Again</button>
+            <!-- `location.reload()` refreshes the page so you can play again. -->
+        </div>
+
+    </div>
+
+    <script>
+        /* --- GAME DATA --- */
+
+        // `minecraftItems` is an array of emoji used as collectible reward items.
+        const minecraftItems = ["💎", "⚔️", "🍎", "🛡️", "🏹", "🧨", "🥩", "🗺️", "⛏️", "🔮", "🧩", "🏺", "🕯️", "🥖", "🧭", "🧪", "🗝️", "🔱"];
+
+        // `levels` is an array of level definitions; each item is an object describing that level.
+        const levels = [
+            {
+                id: 1, // Unique id for the level.
+                opponentName: "Winston Churchill", // Name shown as the opponent.
+                opponentImg: "churchill.jpg", // Reference to an image file (used in the HTML inside `opponentHtml`).
+                opponentHtml: `
+        <div class="spooky-opponent">
+            <style>
+            .spooky-opponent{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center;}
+            .spooky-img{width:200px;height:200px;object-fit:cover;border-radius:10px;filter:grayscale(30%) contrast(120%) drop-shadow(0 0 12px purple);animation:float 4s ease-in-out infinite, hue 6s linear infinite;}
+            .spooky-mouth{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:64px;height:12px;background:rgba(0,0,0,0.7);border-radius:12px;animation:talk 420ms steps(2) infinite;}
+            .spooky-speech{
+            position:absolute;
+            top:-40px;
+            left:30%;
+            transform:translateX(-50%);
+            background:rgba(0,0,0,0.65);
+            color:var(--accent);
+            padding:6px 10px;
+            border:1px solid var(--accent);
+            border-radius:6px;
+            font-size:14px;
+            opacity:0;
+            pointer-events:none;
+            white-space:nowrap;
+            /* 9s cycle: visible 6s, hidden 3s */
+            animation: ghostSpeak 9s linear infinite;
+            }
+            .spooky-speech::after{
+            content:"";
+            position:absolute;
+            left:50%;
+            top:100%;
+            transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:6px solid transparent;
+            border-right:6px solid transparent;
+            border-top:8px solid rgba(0,0,0,0.65);
+            }
+
+            @keyframes ghostSpeak{
+            /* 0% - 9s cycle -> visible from ~0s to 6s (0% - 66.666%), hidden for last 3s */
+            0%   { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            5%   { opacity:1; transform:translate(-50%,0)    scale(1); }  /* quick fade-in */
+            66.666% { opacity:1; transform:translate(-50%,0) scale(1); } /* remain visible until 6s */
+            77%  { opacity:0; transform:translate(-50%,-8px) scale(0.98); } /* fade-out */
+            100% { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            }
+
+            @keyframes talk{0%{transform:translateX(-50%) scaleY(1);}40%{transform:translateX(-50%) scaleY(0.28);}80%{transform:translateX(-50%) scaleY(1);}100%{transform:translateX(-50%) scaleY(1);}}
+            @keyframes hue{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(25deg)}100%{filter:hue-rotate(0deg)}}
+            </style>
+
+            <img src="churchill.jpg" alt="Winston Churchill" class="spooky-img" />
+            <div class="spooky-mouth" aria-hidden="true"></div>
+            <div class="spooky-speech">"Think you got this? show me what you got"</div>
+        </div>
+        `,
+                bg: "linear-gradient(to bottom, #000000, #434343)", // Background used for the level scene.
+                questions: [
+                    {
+                        q: "When did World War II officially begin?",
+                        options: ["December 7, 1941", "September 1, 1939", "June 6, 1944", "August 14, 1947"],
+                        a: 1 // `a` stores the index of the correct option; here the second option is correct.
+                    },
+                    {
+                        q: "Which nations primarily made up the Axis Powers?",
+                        options: ["USA, UK, USSR", "Germany, Italy, Japan", "France, China, Poland", "Germany, Austria, Turkey"],
+                        a: 1
+                    },
+                    {
+                        q: "The bombing of Pearl Harbor occurred on which date?",
+                        options: ["December 7, 1941", "September 2, 1945", "June 25, 1941", "May 8, 1945"],
+                        a: 0
+                    },
+                    {
+                        q: "What was the main purpose of Executive Order 8802 signed by FDR?",
+                        options: ["To declare war on Japan", "To ban discrimination in the defense industry", "To start the Manhattan Project", "To create the GI Bill"],
+                        a: 1
+                    },
+                    {
+                        q: "How many Americans were killed during the Pearl Harbor attack?",
+                        options: ["1,178", "3,500", "2,403", "129"],
+                        a: 2
+                    },
+                    {
+                        q: "Which countries lost the most citizens during WWII?",
+                        options: ["USA and UK", "Germany and Italy", "Soviet Union and China", "Japan and France"],
+                        a: 2
+                    }
+                ]
+            },
+            {
+                id: 2,
+                opponentName: "FDR's Spirit",
+                opponentImg: "fdr.jpg",
+                opponentHtml: `
+        <div class="spooky-opponent">
+            <style>
+            .spooky-opponent{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center;}
+            .spooky-img{width:200px;height:200px;object-fit:cover;border-radius:10px;filter:grayscale(30%) contrast(120%) drop-shadow(0 0 12px purple);animation:float 4s ease-in-out infinite, hue 6s linear infinite;}
+            .spooky-mouth{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:64px;height:12px;background:rgba(0,0,0,0.7);border-radius:12px;animation:talk 420ms steps(2) infinite;}
+            .spooky-speech{
+            position:absolute;
+            top:-40px;
+            left:30%;
+            transform:translateX(-50%);
+            background:rgba(0,0,0,0.65);
+            color:var(--accent);
+            padding:6px 10px;
+            border:1px solid var(--accent);
+            border-radius:6px;
+            font-size:14px;
+            opacity:0;
+            pointer-events:none;
+            white-space:nowrap;
+            /* 9s cycle: visible 6s, hidden 3s */
+            animation: ghostSpeak 9s linear infinite;
+            }
+            .spooky-speech::after{
+            content:"";
+            position:absolute;
+            left:50%;
+            top:100%;
+            transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:6px solid transparent;
+            border-right:6px solid transparent;
+            border-top:8px solid rgba(0,0,0,0.65);
+            }
+
+            @keyframes ghostSpeak{
+            /* 0% - 9s cycle -> visible from ~0s to 6s (0% - 66.666%), hidden for last 3s */
+            0%   { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            5%   { opacity:1; transform:translate(-50%,0)    scale(1); }  /* quick fade-in */
+            66.666% { opacity:1; transform:translate(-50%,0) scale(1); } /* remain visible until 6s */
+            77%  { opacity:0; transform:translate(-50%,-8px) scale(0.98); } /* fade-out */
+            100% { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            }
+
+            @keyframes talk{0%{transform:translateX(-50%) scaleY(1);}40%{transform:translateX(-50%) scaleY(0.28);}80%{transform:translateX(-50%) scaleY(1);}100%{transform:translateX(-50%) scaleY(1);}}
+            @keyframes hue{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(25deg)}100%{filter:hue-rotate(0deg)}}
+            </style>
+
+            <img src="fdr.jpg" alt="FDR's Spirit" class="spooky-img" />
+            <div class="spooky-mouth" aria-hidden="true"></div>
+            <div class="spooky-speech">"Looks like someone is blanking! Focus..."</div>
+        </div>
+        `,
+                bg: "linear-gradient(to bottom, #200122, #6f0000)",
+                questions: [
+                    {
+                        q: "The Servicemen’s Readjustment Act is commonly known as what?",
+                        options: ["The Draft", "The New Deal", "The G.I. Bill", "The Marshall Plan"],
+                        a: 2
+                    },
+                    {
+                        q: "On what date did President Franklin D. Roosevelt die?",
+                        options: ["April 12, 1945", "May 8, 1945", "September 2, 1945", "June 22, 1944"],
+                        a: 0
+                    },
+                    {
+                        q: "How did Adolf Hitler die?",
+                        options: ["Captured by Soviets", "Suicide by gunshot and cyanide", "Heart attack", "Plane crash"],
+                        a: 1
+                    },
+                    {
+                        q: "The United Nations was founded on October 24, 1945, to maintain what?",
+                        options: ["International peace", "Global trade dominance", "Nuclear secrets", "Space exploration"],
+                        a: 0
+                    },
+                    {
+                        q: "Who was sworn in as the 33rd President after FDR's death?",
+                        options: ["Dwight D. Eisenhower", "John F. Kennedy", "Harry S. Truman", "Herbert Hoover"],
+                        a: 2
+                    },
+                    {
+                        q: "What benefits did the GI Bill provide?",
+                        options: ["Free cars", "Education aid and low-interest home loans", "Guaranteed government jobs", "Free healthcare for life"],
+                        a: 1
+                    }
+                ]
+            },
+            {
+                id: 3,
+                opponentName: "Jawaharlal Nehru",
+                opponentImg: "nehru.jpg",
+                opponentHtml: `
+        <div class="spooky-opponent">
+            <style>
+            .spooky-opponent{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center;}
+            .spooky-img{width:200px;height:200px;object-fit:cover;border-radius:10px;filter:grayscale(30%) contrast(120%) drop-shadow(0 0 12px purple);animation:float 4s ease-in-out infinite, hue 6s linear infinite;}
+            .spooky-mouth{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:64px;height:12px;background:rgba(0,0,0,0.7);border-radius:12px;animation:talk 420ms steps(2) infinite;}
+            .spooky-speech{
+            position:absolute;
+            top:-40px;
+            left:30%;
+            transform:translateX(-50%);
+            background:rgba(0,0,0,0.65);
+            color:var(--accent);
+            padding:6px 10px;
+            border:1px solid var(--accent);
+            border-radius:6px;
+            font-size:14px;
+            opacity:0;
+            pointer-events:none;
+            white-space:nowrap;
+            /* 9s cycle: visible 6s, hidden 3s */
+            animation: ghostSpeak 9s linear infinite;
+            }
+            .spooky-speech::after{
+            content:"";
+            position:absolute;
+            left:50%;
+            top:100%;
+            transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:6px solid transparent;
+            border-right:6px solid transparent;
+            border-top:8px solid rgba(0,0,0,0.65);
+            }
+
+            @keyframes ghostSpeak{
+            /* 0% - 9s cycle -> visible from ~0s to 6s (0% - 66.666%), hidden for last 3s */
+            0%   { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            5%   { opacity:1; transform:translate(-50%,0)    scale(1); }  /* quick fade-in */
+            66.666% { opacity:1; transform:translate(-50%,0) scale(1); } /* remain visible until 6s */
+            77%  { opacity:0; transform:translate(-50%,-8px) scale(0.98); } /* fade-out */
+            100% { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            }
+
+            @keyframes talk{0%{transform:translateX(-50%) scaleY(1);}40%{transform:translateX(-50%) scaleY(0.28);}80%{transform:translateX(-50%) scaleY(1);}100%{transform:translateX(-50%) scaleY(1);}}
+            @keyframes hue{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(25deg)}100%{filter:hue-rotate(0deg)}}
+            </style>
+
+            <img src="nehru.jpg" alt="Jawaharlal Nehru" class="spooky-img" />
+            <div class="spooky-mouth" aria-hidden="true"></div>
+            <div class="spooky-speech">"I believe you can do it!"</div>
+        </div>
+        `,
+                bg: "linear-gradient(to bottom, #1e3c72, #2a5298)",
+                questions: [
+                    {
+                        q: "The Cold War (1947-1991) was primarily between which two powers?",
+                        options: ["USA and Germany", "UK and France", "USA and Soviet Union", "China and Japan"],
+                        a: 2
+                    },
+                    {
+                        q: "When was the State of Israel officially declared independent?",
+                        options: ["May 14, 1948", "August 15, 1947", "December 7, 1941", "October 24, 1945"],
+                        a: 0
+                    },
+                    {
+                        q: "The Indian Independence Act separated British India into which two countries?",
+                        options: ["India and Bangladesh", "India and Pakistan", "Kashmir and Punjab", "India and Nepal"],
+                        a: 1
+                    },
+                    {
+                        q: "Who declared Israel's independence and became its first Prime Minister?",
+                        options: ["Harry S. Truman", "David Ben-Gurion", "Winston Churchill", "Albert Einstein"],
+                        a: 1
+                    },
+                    {
+                        q: "The partition of India led to a mass migration of how many people?",
+                        options: ["1 million", "5-8 million", "12-20 million", "50 million"],
+                        a: 2
+                    },
+                    {
+                        q: "How long after Israel's declaration did the US recognize the state?",
+                        options: ["11 minutes", "24 hours", "1 week", "1 month"],
+                        a: 0
+                    }
+                ]
+            },
+            {
+                id: 4, // BOSS LEVEL
+                opponentName: "Dragon Boss",
+                opponentImg: "dragon.jpg",
+                opponentHtml: `
+        <div class="spooky-opponent">
+            <style>
+            .spooky-opponent{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center;}
+            .spooky-img{width:200px;height:200px;object-fit:cover;border-radius:10px;filter:grayscale(30%) contrast(120%) drop-shadow(0 0 12px purple);animation:float 4s ease-in-out infinite, hue 6s linear infinite;}
+            .spooky-mouth{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:64px;height:12px;background:rgba(0,0,0,0.7);border-radius:12px;animation:talk 420ms steps(2) infinite;}
+            .spooky-speech{
+            position:absolute;
+            top:-40px;
+            left:50%;
+            transform:translateX(-50%);
+            background:rgba(0,0,0,0.65);
+            color:var(--accent);
+            padding:6px 10px;
+            border:1px solid var(--accent);
+            border-radius:6px;
+            font-size:14px;
+            opacity:0;
+            pointer-events:none;
+            white-space:nowrap;
+            /* 9s cycle: visible 6s, hidden 3s */
+            animation: ghostSpeak 9s linear infinite;
+            }
+            .spooky-speech::after{
+            content:"";
+            position:absolute;
+            left:50%;
+            top:100%;
+            transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:6px solid transparent;
+            border-right:6px solid transparent;
+            border-top:8px solid rgba(0,0,0,0.65);
+            }
+
+            @keyframes ghostSpeak{
+            /* 0% - 9s cycle -> visible from ~0s to 6s (0% - 66.666%), hidden for last 3s */
+            0%   { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            5%   { opacity:1; transform:translate(-50%,0)    scale(1); }  /* quick fade-in */
+            66.666% { opacity:1; transform:translate(-50%,0) scale(1); } /* remain visible until 6s */
+            77%  { opacity:0; transform:translate(-50%,-8px) scale(0.98); } /* fade-out */
+            100% { opacity:0; transform:translate(-50%,-10px) scale(0.95); }
+            }
+
+            @keyframes talk{0%{transform:translateX(-50%) scaleY(1);}40%{transform:translateX(-50%) scaleY(0.28);}80%{transform:translateX(-50%) scaleY(1);}100%{transform:translateX(-50%) scaleY(1);}}
+            @keyframes hue{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(25deg)}100%{filter:hue-rotate(0deg)}}
+            </style>
+
+            <img src="dragon.jpg" alt="Dragon Boss" class="spooky-img" />
+            <div class="spooky-mouth" aria-hidden="true"></div>
+            <div class="spooky-speech">"I am going to crush you!"</div>
+        </div>
+        `,
+                bg: "linear-gradient(to bottom, #0f0c29, #302b63, #24243e)",
+                questions: [
+                    {
+                        q: "BOSS BATTLE: Who threatened a mass march causing Executive Order 8802?",
+                        options: ["MLK Jr.", "A. Philip Randolph", "Rosa Parks", "Malcolm X"],
+                        a: 1
+                    },
+                    {
+                        q: "BOSS BATTLE: Hitler's wife, who died with him, was named...?",
+                        options: ["Eva Braun", "Eleanor Roosevelt", "Elizabeth Shoumatoff", "Angela Merkel"],
+                        a: 0
+                    },
+                    {
+                        q: "BOSS BATTLE: Where did FDR die?",
+                        options: ["The White House", "Hyde Park, NY", "Warm Springs, Georgia", "Washington D.C."],
+                        a: 2
+                    },
+                    {
+                        q: "BOSS BATTLE: Which war immediately followed Israel's declaration?",
+                        options: ["The Six-Day War", "The First Arab-Israeli War", "World War II", "The Cold War"],
+                        a: 1
+                    }
+                ]
+            }
+        ];
+
+        /* --- GAME ENGINE --- */
+
+        const game = {
+            // `levelIndex` remembers which level the player is on; start at 0 for the first level.
+            levelIndex: 0,
+            // `qIndex` remembers which question in the current level we are showing.
+            qIndex: 0,
+            // `inventory` starts empty and will hold reward items (emoji) the player collects.
+            inventory: [],
+            // `state` is a short word that tells the game which step of the flow we are in.
+            state: 'start', // start, study, intro, level, boss, win
+
+            init: function () {
+                // Hide the study-screen and show the main game screen and HUD.
+                document.getElementById('study-screen').classList.add('hidden');
+                document.getElementById('game-scene').classList.remove('hidden');
+                document.getElementById('hud').classList.remove('hidden');
+                this.playIntro(); // Start the intro dialog after UI changes.
+            },
+
+
+            showLogs: function () {
+                // Hide the start screen and reveal the study screen with logs.
+                document.getElementById('start-screen').classList.add('hidden');
+                document.getElementById('study-screen').classList.remove('hidden');
+            },
+
+            playIntro: function () {
+                // Show initial dialog text and set state to 'intro'.
+                this.setDialog("Mac", "Woah... my head. We hit that button and crashed! I'm Mac, from the 5th Dimension.", ["Next"]);
+                this.state = 'intro';
+            },
+
+            nextLevel: function () {
+                // Move to the next level by increasing the level index and resetting question index.
+                this.levelIndex++;
+                this.qIndex = 0;
+
+                if (this.levelIndex >= 3) {
+                    // If we've reached level 3 or beyond, start the boss battle (level index 3 is the boss).
+                    this.startBossBattle();
+                } else {
+                    // Otherwise start a normal level.
+                    this.startLevel();
+                }
+            },
+
+            startLevel: function () {
+                // Load data for the current level from the `levels` array.
+                const levelData = levels[this.levelIndex];
+                // Set the game scene background to the level's background string.
+                document.getElementById('game-scene').style.background = levelData.bg;
+                // Put the opponent's HTML into the #opponent element so it displays.
+                document.getElementById('opponent').innerHTML = levelData.opponentHtml;
+                // Update the HUD's level display number (user-friendly numbering starts at 1).
+                document.getElementById('level-display').innerText = this.levelIndex + 1;
+
+                // Animation Reset: fade opponent in for visual effect.
+                const opp = document.getElementById('opponent');
+                opp.style.opacity = 0; // Make transparent immediately.
+                setTimeout(() => opp.style.opacity = 1, 500); // Fade in after half a second.
+
+                // Show a pre-level dialog prompting the player to start the battle.
+                this.setDialog("Mac", `Okay, we're in Zone ${this.levelIndex + 1}. That looks like ${levelData.opponentName}! We need to pass this zone.`, ["Start Battle of Wits"]);
+                this.state = 'pre-level'; // Update state so the next button knows what to do.
+            },
+
+            showQuestion: function () {
+                // Get the current level and question objects.
+                const levelData = levels[this.levelIndex];
+                const qData = levelData.questions[this.qIndex];
+
+                // If levelIndex===3 we call the speaker "The Dragon" for the boss.
+                const speaker = (this.levelIndex === 3) ? "The Dragon" : levelData.opponentName;
+
+                // Put the speaker name and question text into the dialog.
+                document.getElementById('speaker-name').innerText = speaker;
+                document.getElementById('dialog-text').innerText = qData.q;
+
+                // Clear any old choice buttons.
+                const container = document.getElementById('choices-container');
+                container.innerHTML = '';
+
+                // For each answer option create a button and attach an onclick handler that passes the option index.
+                qData.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn'; // Use choice button styles.
+                    btn.innerText = opt; // Show the option text.
+                    btn.onclick = () => this.handleAnswer(idx); // When clicked, call handleAnswer with the chosen index.
+                    container.appendChild(btn); // Add the button to the choices container.
+                });
+            },
+
+            handleAnswer: function (selectedIndex) {
+                // Get the question data to check the correct answer index.
+                const levelData = levels[this.levelIndex];
+                const qData = levelData.questions[this.qIndex];
+
+                if (selectedIndex === qData.a) {
+                    // Correct answer branch.
+                    this.rewardPlayer(); // Give a collectible item.
+                    this.qIndex++; // Move to the next question in this level.
+
+                    if (this.levelIndex === 3) {
+                        // If we are in the boss level, show boss damage effects.
+                        this.damageBoss();
+                    }
+
+                    if (this.qIndex >= levelData.questions.length) {
+                        // If we finished all questions in this level:
+                        if (this.levelIndex === 3) {
+                            // If boss finished, win the game.
+                            this.winGame();
+                        } else {
+                            // Otherwise show a completion dialog and wait to advance to next zone.
+                            this.setDialog("Mac", "Great job! We crossed this zone. Let's move on to find the Mystic Gem.", ["Next Zone"]);
+                            this.state = 'level-complete';
+                        }
+                    } else {
+                        // If there are more questions, show the next one after a short delay.
+                        setTimeout(() => this.showQuestion(), 1000); // 1 second delay for pacing.
+                    }
+                } else {
+                    // Wrong answer branch.
+                    this.setDialog("Mac", "That's not right! Think back to the mission logs!", ["Try Again"]);
+                    this.state = 'retry'; // Mark state so clicking the button will retry the question.
+                }
+            },
+
+            rewardPlayer: function () {
+                // Choose a random item from the `minecraftItems` array.
+                const item = minecraftItems[Math.floor(Math.random() * minecraftItems.length)];
+                // Add the item to the player's inventory array.
+                this.inventory.push(item);
+
+                // Update the visual HUD by creating a new slot element and inserting the emoji.
+                const invBox = document.getElementById('inventory-box');
+                const slot = document.createElement('div');
+                slot.className = 'item-slot';
+                slot.innerText = item; // Put the emoji inside the slot.
+                invBox.appendChild(slot); // Add the slot to the inventory box.
+
+                // Visual feedback: animate the Mac element to indicate success.
+                const mac = document.getElementById('mac');
+                mac.animate([
+                    { transform: 'translateY(0)' },
+                    { transform: 'translateY(-30px)' },
+                    { transform: 'translateY(0)' }
+                ], { duration: 300 });
+            },
+
+            startBossBattle: function () {
+                // Hide normal opponent area and slide the dragon boss into view.
+                document.getElementById('opponent').classList.add('hidden'); // Hide normal opponents
+                const dragon = document.getElementById('dragon');
+                dragon.style.right = "50px"; // Slide dragon in from right by changing `right` property.
+
+                // Use the boss background and label the HUD as FINAL BOSS.
+                document.getElementById('game-scene').style.background = levels[3].bg;
+                document.getElementById('level-display').innerText = "FINAL BOSS";
+
+                // Set an initial dialog for the boss and update state so the next button shows boss questions.
+                this.setDialog("The Dragon", "ROAR! I hold the Mystic Gem! You carry many trinkets, but do you possess KNOWLEDGE?", ["Face the Dragon"]);
+                this.state = 'boss-start';
+            },
+
+            damageBoss: function () {
+                // Add a shake class for a short animation and change the dragon's filter for a flash effect.
+                const dragon = document.getElementById('dragon');
+                dragon.classList.add('dragon-shake');
+
+                // Visual flash using CSS filter.
+                dragon.style.filter = "brightness(500%) sepia(100%) hue-rotate(-50deg)";
+                setTimeout(() => {
+                    // After the short flash, restore the glow and remove the shake class.
+                    dragon.style.filter = "drop-shadow(0 0 20px orange)";
+                    dragon.classList.remove('dragon-shake');
+                    // Shrink the dragon a bit to show cumulative damage.
+                    const prevScale = parseFloat(dragon.dataset.scale) || 1; // Read previously stored scale or default to 1.
+                    const newScale = +(prevScale * 0.8).toFixed(3); // Reduce scale by 20% (cumulative).
+                    dragon.dataset.scale = newScale; // Store the new scale back on the element's dataset.
+                    dragon.style.transition = "transform 300ms ease, filter 300ms ease"; // Smooth transform.
+                    dragon.style.transform = `scale(${newScale})`; // Apply the visual shrinking.
+                }, 300);
+            },
+
+            winGame: function () {
+                // Hide the main game scene and HUD, then reveal the victory screen.
+                document.getElementById('game-scene').classList.add('hidden');
+                document.getElementById('hud').classList.add('hidden');
+                document.getElementById('victory-screen').classList.remove('hidden');
+
+                // Populate the final treasures area with the inventory items collected.
+                const treasureContainer = document.getElementById('final-treasures');
+                treasureContainer.innerHTML = ''; // clear any old content just in case.
+                this.inventory.forEach(item => {
+                    const span = document.createElement('span');
+                    span.className = 'final-item';
+                    span.innerText = item;
+                    treasureContainer.appendChild(span);
+                });
+
+                // Prepare the spaceship element for a controlled landing animation.
+                const ship = document.getElementById('mac-spaceship');
+                ship.style.transform = '';
+                ship.style.transition = '';
+                // ensure left is set in pixels for animation calculations
+                ship.style.left = (ship.offsetLeft) + 'px';
+
+                // Start controlled movement to land the ship close to the planet.
+                this.startShipLandingToOffset(1); // 1 pixel away from the planet.
+            },
+
+            /* Move the mac-spaceship horizontally until it is `offsetPx` pixels away from the home-planet */
+            startShipLandingToOffset: function (offsetPx) {
+                const ship = document.getElementById('mac-spaceship');
+                const planet = document.getElementById('home-planet');
+                const scene = document.querySelector('.scene-space');
+                if (!ship || !planet || !scene) return; // Safety: if elements are missing, stop.
+
+                // Make sure ship uses left positioning (already absolute in CSS)
+                ship.style.left = ship.offsetLeft + 'px';
+
+                // compute target left relative to scene
+                const sceneRect = scene.getBoundingClientRect();
+                const planetRect = planet.getBoundingClientRect();
+                const shipRect = ship.getBoundingClientRect();
+
+                // Desired ship left such that ship's right edge is offsetPx pixels left of planet's left edge:
+                // targetLeft = (planetLeft - sceneLeft) - shipWidth - offsetPx
+                let targetLeft = (planetRect.left - sceneRect.left) - shipRect.width - offsetPx;
+
+                // safety clamp so targetLeft is not negative
+                targetLeft = Math.max(targetLeft, 0);
+
+                // If ship is already beyond target, we still allow small backward movement
+                let currentLeft = ship.offsetLeft;
+
+                // If already within 1px, just set final and return
+                if (Math.abs(currentLeft - targetLeft) < 1) {
+                    ship.style.left = targetLeft + 'px';
+                    return;
+                }
+
+                // animate with requestAnimationFrame using ease-out lerp
+                let lastTime = null;
+                const duration = 1200; // ms approximate easing duration for completeness
+                const startLeft = currentLeft;
+
+                const animate = (timestamp) => {
+                    if (!lastTime) lastTime = timestamp;
+                    const elapsed = timestamp - lastTime;
+                    // progress from 0 to 1
+                    const totalElapsed = timestamp - (lastTime - 0); // just use elapsed since start step-by-step
+                    // Use time-based easing independent of frame rate
+                    // Compute fraction of distance remaining and move by eased increment
+                    const dx = targetLeft - currentLeft;
+                    // If close enough, snap and finish
+                    if (Math.abs(dx) < 0.5) {
+                        ship.style.left = targetLeft + 'px';
+                        return;
+                    }
+
+                    // move by easing fraction each frame for smooth motion
+                    const step = Math.max(Math.min(Math.abs(dx) * 0.18, 18), 1); // dynamic step
+                    currentLeft += (dx > 0 ? step : -step);
+                    ship.style.left = currentLeft + 'px';
+
+                    requestAnimationFrame(animate);
+                };
+
+                requestAnimationFrame(animate);
+            },
+
+            // Handling the dialog flow
+            setDialog: function (name, text, buttons) {
+                // Update speaker name and dialog text in the dialog box.
+                document.getElementById('speaker-name').innerText = name;
+                document.getElementById('dialog-text').innerText = text;
+                const container = document.getElementById('choices-container');
+                container.innerHTML = '';
+
+                // For each provided button text, create a button element that calls advanceState when clicked.
+                buttons.forEach(btnText => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn';
+                    btn.innerText = btnText;
+                    btn.onclick = () => this.advanceState();
+                    container.appendChild(btn);
+                });
+            },
+
+            advanceState: function () {
+                // Decide what to do next based on the game's current state.
+                if (this.state === 'intro') {
+                    this.startLevel();
+                } else if (this.state === 'pre-level') {
+                    this.showQuestion();
+                } else if (this.state === 'retry') {
+                    this.showQuestion();
+                } else if (this.state === 'level-complete') {
+                    this.nextLevel();
+                } else if (this.state === 'boss-start') {
+                    this.showQuestion();
+                }
+            }
+        };
+
+    </script>
+</body>
+
+</html>
