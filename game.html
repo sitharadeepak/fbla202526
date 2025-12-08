@@ -172,8 +172,16 @@
         }
 
         .btn:hover {
-            transform: scale(1.05); /* Slightly enlarge on hover. */
+            transform: scale(1.05) translateY(-2px); /* Slightly enlarge and lift on hover. */
             background: #fff; /* Lighten the button when hovered. */
+            box-shadow: 0 8px 25px rgba(0, 255, 204, 0.4); /* Add glowing shadow */
+            animation: buttonPulse 0.6s ease-in-out;
+        }
+
+        @keyframes buttonPulse {
+            0% { box-shadow: 0 8px 25px rgba(0, 255, 204, 0.4); }
+            50% { box-shadow: 0 12px 35px rgba(0, 255, 204, 0.6); }
+            100% { box-shadow: 0 8px 25px rgba(0, 255, 204, 0.4); }
         }
 
         /* Study Screen (New) */
@@ -212,12 +220,263 @@
 
         /* Gameplay Visuals */
         #game-scene {
+            position: relative; /* Child elements are positioned relative to this container. */
+            width: 100%; /* Take up the full width of the parent. */
+            height: 600px; /* Increased height to give more space for characters */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Default gradient background. */
+            overflow: visible; /* Allow characters to be fully visible */
+            border: 2px solid var(--accent); /* Accent border around the scene. */
             background-size: cover; /* Background image should cover the area. */
-            position: relative; /* Allow absolutely positioned children. */
             z-index: 1; /* Base scene behind screens. */
         }
 
-        /* Animations */
+        /* Animated alien planet elements */
+        .alien-volcano {
+            position: absolute;
+            font-size: 45px; /* Varied sizes */
+            animation: volcanoGlow 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2; /* Above background but below characters */
+        }
+
+        .alien-volcano:nth-child(1) { 
+            font-size: 40px; 
+            left: 5%; 
+            top: 15%; 
+            animation-delay: 0s; 
+        }
+        .alien-volcano:nth-child(2) { 
+            font-size: 55px; 
+            right: 8%; 
+            top: 35%; 
+            animation-delay: 2s; 
+        }
+        .alien-volcano:nth-child(3) { 
+            font-size: 35px; 
+            left: 75%; 
+            top: 55%; 
+            animation-delay: 1s; 
+        }
+        .alien-volcano:nth-child(4) { 
+            font-size: 48px; 
+            right: 65%; 
+            top: 75%; 
+            animation-delay: 3s; 
+        }
+
+        @keyframes volcanoGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 10px orange) brightness(1);
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 20px red) brightness(1.3);
+                transform: scale(1.05);
+            }
+        }
+
+        .alien-rock {
+            position: absolute;
+            font-size: 30px; /* Base size */
+            animation: rockFloat 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2; /* Above background but below characters */
+        }
+
+        .alien-rock:nth-child(1) { 
+            font-size: 25px; 
+            left: 15%; 
+            top: 20%; 
+            animation-delay: 0s; 
+        }
+        .alien-rock:nth-child(2) { 
+            font-size: 40px; 
+            left: 40%; 
+            top: 45%; 
+            animation-delay: 3s; 
+        }
+        .alien-rock:nth-child(3) { 
+            font-size: 32px; 
+            right: 20%; 
+            top: 25%; 
+            animation-delay: 1.5s; 
+        }
+        .alien-rock:nth-child(4) { 
+            font-size: 28px; 
+            right: 45%; 
+            top: 60%; 
+            animation-delay: 4s; 
+        }
+        .alien-rock:nth-child(5) { 
+            font-size: 35px; 
+            left: 65%; 
+            top: 80%; 
+            animation-delay: 2s; 
+        }
+        .alien-rock:nth-child(6) { 
+            font-size: 22px; 
+            right: 80%; 
+            top: 40%; 
+            animation-delay: 5s; 
+        }
+
+        @keyframes rockFloat {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg);
+                filter: drop-shadow(0 0 5px rgba(139, 69, 19, 0.5));
+            }
+            50% { 
+                transform: translateY(-8px) rotate(2deg);
+                filter: drop-shadow(0 0 8px rgba(139, 69, 19, 0.7));
+            }
+        }
+
+        .alien-crystal {
+            position: absolute;
+            font-size: 28px; /* Base size */
+            animation: crystalPulse 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2; /* Above background but below characters */
+        }
+
+        .alien-crystal:nth-child(1) { 
+            font-size: 32px; 
+            left: 25%; 
+            top: 30%; 
+            animation-delay: 0s; 
+        }
+        .alien-crystal:nth-child(2) { 
+            font-size: 25px; 
+            right: 30%; 
+            top: 50%; 
+            animation-delay: 1.5s; 
+        }
+        .alien-crystal:nth-child(3) { 
+            font-size: 20px; 
+            left: 85%; 
+            top: 70%; 
+            animation-delay: 0.8s; 
+        }
+        .alien-crystal:nth-child(4) { 
+            font-size: 35px; 
+            right: 55%; 
+            top: 20%; 
+            animation-delay: 2.2s; 
+        }
+        .alien-crystal:nth-child(5) { 
+            font-size: 24px; 
+            left: 50%; 
+            top: 10%; 
+            animation-delay: 1.2s; 
+        }
+
+        @keyframes crystalPulse {
+            0%, 100% { 
+                filter: drop-shadow(0 0 8px cyan) brightness(1);
+                transform: scale(1) rotate(0deg);
+            }
+            50% { 
+                filter: drop-shadow(0 0 15px cyan) brightness(1.4);
+                transform: scale(1.1) rotate(10deg);
+            }
+        }
+
+        /* Floating alien particles */
+        .alien-particle {
+            position: absolute;
+            font-size: 18px;
+            animation: particleFloat 8s linear infinite;
+            pointer-events: none;
+            z-index: 1; /* Above background, below planet objects */
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Animated alien planet background */
+        #game-scene::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                /* Distant alien mountains */
+                linear-gradient(180deg, transparent 0%, rgba(75, 0, 130, 0.4) 60%, rgba(139, 69, 19, 0.6) 80%, rgba(139, 69, 19, 0.8) 100%),
+                /* Twinkling stars */
+                radial-gradient(2px 2px at 20px 30px, #00ffcc, transparent),
+                radial-gradient(1px 1px at 40px 70px, #ff00ff, transparent),
+                radial-gradient(2px 2px at 90px 40px, white, transparent),
+                radial-gradient(1px 1px at 130px 80px, #00ffcc, transparent),
+                radial-gradient(2px 2px at 160px 30px, white, transparent);
+            background-repeat: repeat;
+            background-size: 300px 150px;
+            animation: alienAtmosphere 45s ease-in-out infinite;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: -4; /* Behind all game content */
+        }
+
+        /* Alien planet surface elements */
+        #game-scene::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: 
+                /* Rocky alien terrain */
+                radial-gradient(ellipse 80px 30px at 10% 100%, rgba(139, 69, 19, 0.8), transparent),
+                radial-gradient(ellipse 60px 25px at 25% 100%, rgba(160, 82, 45, 0.7), transparent),
+                radial-gradient(ellipse 100px 35px at 45% 100%, rgba(105, 105, 105, 0.6), transparent),
+                radial-gradient(ellipse 70px 28px at 65% 100%, rgba(139, 69, 19, 0.8), transparent),
+                radial-gradient(ellipse 90px 32px at 85% 100%, rgba(160, 82, 45, 0.7), transparent);
+            animation: surfaceShift 30s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -3; /* Behind all game content */
+        }
+
+        @keyframes alienAtmosphere {
+            0%, 100% { 
+                filter: hue-rotate(0deg) brightness(1);
+                transform: translateX(0);
+            }
+            25% { 
+                filter: hue-rotate(30deg) brightness(1.1);
+                transform: translateX(-10px);
+            }
+            50% { 
+                filter: hue-rotate(60deg) brightness(0.9);
+                transform: translateX(5px);
+            }
+            75% { 
+                filter: hue-rotate(30deg) brightness(1.1);
+                transform: translateX(-5px);
+            }
+        }
+
+        @keyframes surfaceShift {
+            0%, 100% { transform: translateX(0) scaleX(1); }
+            50% { transform: translateX(-20px) scaleX(1.05); }
+        }
+
+        /* Enhanced Animations */
         @keyframes float {
             0% {
                 transform: translateY(0px); /* Start at original position. */
@@ -232,6 +491,51 @@
             }
         }
 
+        /* Character breathing animation */
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1) translateY(0px);
+            }
+            50% {
+                transform: scale(1.02) translateY(-2px);
+            }
+        }
+
+        /* Victory dance animation */
+        @keyframes victoryDance {
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-30px) rotate(-10deg) scale(1.1); }
+            50% { transform: translateY(-20px) rotate(10deg) scale(1.05); }
+            75% { transform: translateY(-35px) rotate(-5deg) scale(1.15); }
+            100% { transform: translateY(0) rotate(0deg) scale(1); }
+        }
+
+        /* Thinking animation */
+        @keyframes thinking {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* Sparkle particle effect */
+        @keyframes sparkle {
+            0% { 
+                opacity: 0; 
+                transform: scale(0) rotate(0deg) translateY(0); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1) rotate(180deg) translateY(-20px); 
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(0) rotate(360deg) translateY(-40px); 
+            }
+        }
+
+        /* Shake animation */
         @keyframes shake {
             0% {
                 transform: translate(1px, 1px) rotate(0deg);
@@ -278,22 +582,165 @@
             }
         }
 
+        /* Parallax background stars */
+        .star {
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            animation: starTwinkle 3s infinite ease-in-out;
+        }
+
+        .star.moving {
+            animation: starMove 20s linear infinite, starTwinkle 3s infinite ease-in-out;
+        }
+
+        /* Enhanced background with animated elements */
+        #game-scene::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(2px 2px at 20px 30px, white, transparent),
+                radial-gradient(2px 2px at 40px 70px, white, transparent),
+                radial-gradient(1px 1px at 90px 40px, white, transparent),
+                radial-gradient(1px 1px at 130px 80px, white, transparent),
+                radial-gradient(2px 2px at 160px 30px, white, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: starMove 60s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Time portal effect */
+        @keyframes timePortal {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+                filter: hue-rotate(0deg) blur(10px);
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0.8;
+                filter: hue-rotate(180deg) blur(5px);
+            }
+            100% {
+                transform: scale(2) rotate(360deg);
+                opacity: 0;
+                filter: hue-rotate(360deg) blur(0px);
+            }
+        }
+
+        /* Entrance fade with scale */
+        @keyframes entranceEffect {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(50px);
+                filter: blur(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0px);
+            }
+        }
+
+        /* Fire breathing effect */
+        @keyframes fireBreath {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateX(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2) translateX(-100px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) translateX(-200px);
+            }
+        }
+
+        /* Parallax stars */
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes starMove {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100px); }
+        }
+
         .character {
             font-size: 100px; /* Large emoji size for characters like Mac and dragon. */
             position: absolute; /* Position characters absolutely inside the scene. */
-            bottom: 200px; /* Place characters above the dialog box at the bottom. */
+            bottom: 250px; /* Place characters well above the dialog box */
             transition: left 1s; /* Smooth movement when the left position changes. */
+            z-index: 20; /* Much higher z-index to stay above everything */
         }
 
         #mac {
             left: 50px; /* Mac starts at 50 pixels from the left. */
-            animation: float 3s infinite ease-in-out; /* Mac gently floats up and down. */
+            animation: float 3s infinite ease-in-out, breathe 4s infinite ease-in-out; /* Mac gently floats and breathes. */
             filter: drop-shadow(0 0 10px cyan); /* Soft glow under Mac. */
+            transition: all 0.3s ease;
+            position: absolute; /* Ensure absolute positioning */
+            z-index: 25; /* Highest priority for Mac */
+        }
+
+        #mac.knowledge-aura {
+            filter: drop-shadow(0 0 20px cyan) drop-shadow(0 0 40px rgba(0, 255, 204, 0.5));
+            animation: float 3s infinite ease-in-out, breathe 4s infinite ease-in-out, knowledgeGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes knowledgeGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        #mac::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 204, 0.2), transparent);
+            opacity: 0;
+            animation: auraExpand 2s ease-out infinite;
+        }
+
+        #mac.powered-up::after {
+            opacity: 1;
+        }
+
+        @keyframes auraExpand {
+            0% { transform: scale(0.5); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        #mac.victory {
+            animation: victoryDance 1s ease-in-out !important;
+        }
+
+        #mac.thinking {
+            animation: thinking 0.5s ease-in-out 3 !important;
         }
 
         #opponent {
             right: 50px; /* Opponent starts from the right side. */
             filter: drop-shadow(0 0 10px red); /* Red glow for the opponent. */
+            transition: all 0.5s ease;
+            z-index: 22; /* High z-index to stay above alien elements but below Mac */
+        }
+
+        #opponent.entrance {
+            animation: entranceEffect 1s ease-out;
         }
 
         #dragon {
@@ -301,20 +748,166 @@
             font-size: 180px; /* Larger size because the boss is big. */
             filter: drop-shadow(0 0 20px orange); /* Orange glow for the dragon. */
             transition: right 1s; /* Smooth slide-in when the 'right' property changes. */
+            position: absolute;
+            opacity: 0; /* Initially hidden */
+            visibility: hidden; /* Completely hidden until boss battle */
+            z-index: 3; /* Lower than opponent z-index during regular levels */
         }
 
-        /* Dialog/Quiz Box */
+        #dragon.boss-active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 23; /* Higher z-index when active as boss but below Mac */
+        }
+
+        #dragon::before {
+            content: '🔥';
+            position: absolute;
+            left: -100px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #dragon.breathing::before {
+            animation: fireBreath 1s ease-out;
+        }
+
+        /* Particle system for sparkles */
+        .sparkle-particle {
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            animation: sparkle 1s ease-out forwards;
+        }
+
+        /* Time portal overlay */
+        .time-portal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,255,204,0.3) 0%, rgba(255,0,255,0.3) 50%, transparent 100%);
+            pointer-events: none;
+            animation: timePortal 2s ease-out forwards;
+        }
+
+        /* Enhanced item slots with advanced effects */
+        .item-slot {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #222;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-slot.energy-charged {
+            background: radial-gradient(circle, rgba(0, 255, 204, 0.3), #222);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+            animation: energyPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes energyPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 204, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 204, 0.8); }
+        }
+
+        .item-slot::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 204, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .item-slot:hover::before {
+            opacity: 1;
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .item-slot.new-item {
+            animation: itemBounce 0.6s ease-out;
+        }
+
+        @keyframes itemBounce {
+            0% { 
+                transform: scale(0) rotate(0deg); 
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.3) rotate(180deg); 
+                filter: brightness(1.5) drop-shadow(0 0 10px var(--accent));
+            }
+            100% { 
+                transform: scale(1) rotate(360deg); 
+                filter: brightness(1);
+            }
+        }
+
+        /* Dialog/Quiz Box with advanced effects */
         #dialog-box {
             position: absolute; /* Place dialog box above the bottom of the scene. */
             bottom: 10px; /* Keep a small margin from the bottom edge. */
             left: 50%; /* Center dialog horizontally using transforms. */
             transform: translateX(-50%); /* Exactly center the box. */
             width: 90%; /* Use most of the width for dialog text. */
+            max-width: 800px; /* Limit width to prevent covering characters */
             background: var(--panel-bg); /* Apply the semi-opaque panel background. */
             border: 2px solid var(--accent); /* Accent border adds visual separation. */
-            padding: 20px; /* Inner padding for text and buttons. */
+            padding: 15px; /* Reduced padding to make more compact */
             border-radius: 10px; /* Rounded corners for the dialog. */
-            min-height: 120px; /* Reserve minimum space so content doesn't overlap. */
+            min-height: 100px; /* Reduced minimum height */
+            max-height: 180px; /* Limit height to prevent covering characters */
+            z-index: 18; /* Lower than characters but above alien elements */
+            overflow: hidden;
+        }
+
+        #dialog-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.1), transparent);
+            animation: dialogScan 4s linear infinite;
+        }
+
+        @keyframes dialogScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        #dialog-box.important {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+            animation: importantPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes importantPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 255, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(255, 0, 255, 0.6); }
         }
 
         #speaker-name {
@@ -326,6 +919,21 @@
         #dialog-text {
             font-size: 18px; /* Slightly larger text for readability. */
             line-height: 1.4; /* Comfortable spacing between lines. */
+            min-height: 50px; /* Reserve space for typewriter effect */
+        }
+
+        .typewriter-cursor {
+            display: inline-block;
+            background-color: var(--accent);
+            width: 2px;
+            height: 1.2em;
+            animation: cursorBlink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes cursorBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
 
         #choices-container {
@@ -340,14 +948,26 @@
             background: #444; /* Gray background for choice buttons. */
             color: #fff; /* White text on dark buttons. */
             border: 1px solid #777; /* Slight border for contrast. */
-            padding: 10px; /* Clickable padding. */
+            padding: 8px 12px; /* Reduced padding for more compact buttons */
             cursor: pointer; /* Pointer cursor for clickable element. */
             flex: 1 1 40%; /* Flexible sizing so buttons grow/shrink but take ~40% width. */
             font-family: inherit; /* Use the same font as the page. */
+            font-size: 14px; /* Slightly smaller font */
+            margin: 2px; /* Small margin between buttons */
+            border-radius: 5px; /* Rounded corners */
         }
 
         .choice-btn:hover {
             background: #666; /* Lighten buttons when hovered for feedback. */
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 255, 204, 0.3);
+            border-color: var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .choice-btn:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 10px rgba(0, 255, 204, 0.2);
         }
 
         /* Boss Effects */
@@ -482,6 +1102,512 @@
             }
         }
 
+        /* Achievement & Progress Systems */
+        .skill-badge {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            opacity: 0;
+            transform: scale(0);
+            animation: badgeAppear 0.8s ease-out forwards;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
+        }
+
+        @keyframes badgeAppear {
+            0% { opacity: 0; transform: scale(0) rotate(-180deg); }
+            70% { opacity: 1; transform: scale(1.2) rotate(10deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        .mastery-glow {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 204, 0.3), transparent);
+            animation: masteryPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes masteryPulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        /* Visual Polish & Style - Lighting & Atmosphere */
+        .dynamic-light {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 204, 0.2), transparent);
+            pointer-events: none;
+            animation: lightPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes lightPulse {
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+
+        .volumetric-rays {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 25%, 
+                transparent 50%, 
+                rgba(0, 255, 204, 0.1) 75%, 
+                transparent 100%);
+            animation: raysSweep 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes raysSweep {
+            0% { transform: translateX(-100%) rotate(0deg); }
+            100% { transform: translateX(100%) rotate(360deg); }
+        }
+
+        /* Material & Texture Effects */
+        .holographic {
+            background: linear-gradient(45deg, 
+                rgba(255, 0, 255, 0.3), 
+                rgba(0, 255, 204, 0.3), 
+                rgba(255, 255, 0, 0.3));
+            background-size: 200% 200%;
+            animation: hologramShift 3s ease-in-out infinite;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes hologramShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .crystalline {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(0, 255, 204, 0.2) 50%, 
+                rgba(255, 255, 255, 0.1) 100%);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crystalline::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: crystallineReflection 4s linear infinite;
+        }
+
+        @keyframes crystallineReflection {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 255, 204, 0.1);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 20;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Cursor Trail Effect */
+        .cursor-trail {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.8;
+            animation: trailFade 0.5s ease-out forwards;
+        }
+
+        @keyframes trailFade {
+            0% { 
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Indicator */
+        .progress-bar {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Achievement Celebration */
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 100;
+            transform: translateX(100%);
+            animation: achievementSlide 3s ease-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes achievementSlide {
+            0% { transform: translateX(100%); }
+            10%, 90% { transform: translateX(0); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Particle & Physics Systems */
+        .knowledge-fragment {
+            position: absolute;
+            font-size: 14px;
+            color: var(--accent);
+            pointer-events: none;
+            animation: fragmentFloat 3s ease-out forwards;
+            opacity: 0.8;
+        }
+
+        @keyframes fragmentFloat {
+            0% { 
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .energy-stream {
+            position: absolute;
+            width: 2px;
+            height: 50px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+            animation: streamFlow 1s ease-out forwards;
+        }
+
+        @keyframes streamFlow {
+            0% { height: 0; opacity: 1; }
+            100% { height: 50px; opacity: 0; }
+        }
+
+        .physics-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: physicsMotion 2s ease-out forwards;
+        }
+
+        @keyframes physicsMotion {
+            0% { 
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-30px) translateX(20px) scale(1.2);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translateY(-60px) translateX(40px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Interactive & Responsive Elements */
+        .contextual-cursor {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="%2300ffcc" opacity="0.5"/></svg>'), auto;
+        }
+
+        .predictive-glow {
+            position: relative;
+        }
+
+        .predictive-glow::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent), var(--accent-secondary));
+            border-radius: inherit;
+            opacity: 0;
+            animation: predictiveHint 3s ease-in-out infinite;
+        }
+
+        @keyframes predictiveHint {
+            0%, 90% { opacity: 0; }
+            95% { opacity: 0.3; }
+            100% { opacity: 0; }
+        }
+
+        .gesture-trail {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, var(--accent), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            animation: gestureTrailFade 1s ease-out forwards;
+        }
+
+        @keyframes gestureTrailFade {
+            0% { 
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Advanced Visual Effects - Energy & Power Systems */
+        .wisdom-chain {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            animation: chainPulse 2s ease-in-out infinite;
+            transform-origin: left center;
+        }
+
+        @keyframes chainPulse {
+            0%, 100% { 
+                transform: scaleX(1);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: scaleX(1.2);
+                opacity: 1;
+            }
+        }
+
+        .brain-storm {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(255, 255, 0, 0.3), transparent);
+            border-radius: 50%;
+            animation: brainStormEffect 1.5s ease-out;
+        }
+
+        @keyframes brainStormEffect {
+            0% { 
+                transform: translateX(-50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(-50%) scale(1.2);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateX(-50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .time-ripple {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: rippleExpand 2s ease-out forwards;
+        }
+
+        @keyframes rippleExpand {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* Environmental Reactions */
+        .alien-volcano.reactive {
+            animation: volcanoGlow 4s ease-in-out infinite, volcanoReaction 1s ease-out;
+        }
+
+        @keyframes volcanoReaction {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .alien-crystal.reactive {
+            animation: crystalPulse 3s ease-in-out infinite, crystalReaction 1s ease-out;
+        }
+
+        @keyframes crystalReaction {
+            0% { 
+                filter: drop-shadow(0 0 8px cyan) brightness(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 25px cyan) brightness(2);
+            }
+            100% { 
+                filter: drop-shadow(0 0 8px cyan) brightness(1);
+            }
+        }
+
+        .dimensional-tear {
+            position: absolute;
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-secondary), transparent);
+            animation: dimensionalGlitch 0.5s ease-in-out;
+            transform-origin: center;
+        }
+
+        @keyframes dimensionalGlitch {
+            0%, 100% { 
+                transform: scaleX(0) skewX(0deg);
+                opacity: 0;
+            }
+            50% { 
+                transform: scaleX(1) skewX(10deg);
+                opacity: 1;
+            }
+        }
+
+        /* Visual Feedback for Answers */
+        .answer-feedback {
+            position: absolute;
+            top: 40%; /* Position higher to avoid dialog overlap */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            z-index: 30; /* High z-index to appear above everything */
+            pointer-events: none;
+        }
+
+        .answer-correct {
+            color: #00ff00;
+            animation: correctFeedback 1.5s ease-out forwards;
+        }
+
+        .answer-incorrect {
+            color: #ff0000;
+            animation: incorrectFeedback 1.5s ease-out forwards;
+        }
+
+        @keyframes correctFeedback {
+            0% { 
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            30% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1) translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes incorrectFeedback {
+            0% { 
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            30% { 
+                transform: translate(-50%, -50%) scale(1.2) rotate(-10deg);
+                opacity: 1;
+            }
+            60% { 
+                transform: translate(-50%, -50%) scale(1.1) rotate(10deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg) translateY(-50px);
+                opacity: 0;
+            }
+        }
+
         /* Scrollbar Styling */
         ::-webkit-scrollbar {
             width: 10px; /* Style width of scrollbars in WebKit browsers. */
@@ -493,6 +1619,17 @@
 
         ::-webkit-scrollbar-thumb {
             background: var(--accent); /* Colored thumb for consistency with theme. */
+        }
+
+        /* Level Update Animation */
+        .level-update {
+            animation: levelUpdate 0.8s ease-out;
+        }
+
+        @keyframes levelUpdate {
+            0% { transform: scale(1.2) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
         }
     </style>
 </head>
@@ -1078,11 +2215,30 @@
             state: 'start', // start, study, intro, level, boss, win
 
             init: function () {
-                // Hide the study-screen and show the main game screen and HUD.
-                document.getElementById('study-screen').classList.add('hidden');
-                document.getElementById('game-scene').classList.remove('hidden');
-                document.getElementById('hud').classList.remove('hidden');
-                this.playIntro(); // Start the intro dialog after UI changes.
+                // Initialize cursor trail effect
+                this.initCursorTrail();
+                
+                // Show loading spinner
+                this.showLoadingSpinner();
+                
+                setTimeout(() => {
+                    // Hide the study-screen and show the main game screen and HUD.
+                    document.getElementById('study-screen').classList.add('hidden');
+                    document.getElementById('game-scene').classList.remove('hidden');
+                    document.getElementById('hud').classList.remove('hidden');
+                    
+                    // Hide loading spinner
+                    this.hideLoadingSpinner();
+                    
+                    // Create alien planet environment
+                    this.createAlienPlanetElements();
+                    
+                    // Show achievement for starting game
+                    this.showAchievement('🚀 Adventure Begins!');
+                    
+                    this.createTimePortal(); // Show time portal transition
+                    setTimeout(() => this.playIntro(), 1000); // Start the intro dialog after portal effect
+                }, 1500);
             },
 
 
@@ -1113,23 +2269,41 @@
             },
 
             startLevel: function () {
-                // Load data for the current level from the `levels` array.
-                const levelData = levels[this.levelIndex];
-                // Set the game scene background to the level's background string.
-                document.getElementById('game-scene').style.background = levelData.bg;
-                // Put the opponent's HTML into the #opponent element so it displays.
-                document.getElementById('opponent').innerHTML = levelData.opponentHtml;
-                // Update the HUD's level display number (user-friendly numbering starts at 1).
-                document.getElementById('level-display').innerText = this.levelIndex + 1;
+                // Create time portal transition effect
+                this.createTimePortal();
+                
+                setTimeout(() => {
+                    // Ensure dragon is hidden during regular levels
+                    const dragon = document.getElementById('dragon');
+                    dragon.classList.remove('boss-active');
+                    
+                    // Load data for the current level from the `levels` array.
+                    const levelData = levels[this.levelIndex];
+                    // Set the game scene background with alien planet overlay
+                    const gameScene = document.getElementById('game-scene');
+                    gameScene.style.background = `${levelData.bg}, radial-gradient(ellipse at center bottom, rgba(75, 0, 130, 0.3) 0%, transparent 70%)`;
+                    
+                    // Put the opponent's HTML into the #opponent element so it displays.
+                    document.getElementById('opponent').innerHTML = levelData.opponentHtml;
+                    // Update the HUD's level display number with animation
+                    const levelDisplay = document.getElementById('level-display');
+                    levelDisplay.classList.add('level-update');
+                    levelDisplay.innerText = this.levelIndex + 1;
+                    setTimeout(() => levelDisplay.classList.remove('level-update'), 800);
 
-                // Animation Reset: fade opponent in for visual effect.
-                const opp = document.getElementById('opponent');
-                opp.style.opacity = 0; // Make transparent immediately.
-                setTimeout(() => opp.style.opacity = 1, 500); // Fade in after half a second.
+                    // Enhanced entrance animation for opponent
+                    const opp = document.getElementById('opponent');
+                    opp.classList.add('entrance');
+                    opp.style.opacity = 0;
+                    setTimeout(() => {
+                        opp.style.opacity = 1;
+                        opp.classList.remove('entrance');
+                    }, 1000);
 
-                // Show a pre-level dialog prompting the player to start the battle.
-                this.setDialog("Mac", `Okay, we're in Zone ${this.levelIndex + 1}. That looks like ${levelData.opponentName}! We need to pass this zone.`, ["Start Battle of Wits"]);
-                this.state = 'pre-level'; // Update state so the next button knows what to do.
+                    // Show a pre-level dialog
+                    this.setDialog("Mac", `Okay, we're in Zone ${this.levelIndex + 1}. That looks like ${levelData.opponentName}! We need to pass this zone.`, ["Start Battle of Wits"]);
+                    this.state = 'pre-level';
+                }, 1000);
             },
 
             showQuestion: function () {
@@ -1140,7 +2314,14 @@
                 // If levelIndex===3 we call the speaker "The Dragon" for the boss.
                 const speaker = (this.levelIndex === 3) ? "The Dragon" : levelData.opponentName;
 
-                // Put the speaker name and question text into the dialog.
+                // Enhanced dragon breathing effect for boss
+                if (this.levelIndex === 3) {
+                    const dragon = document.getElementById('dragon');
+                    dragon.classList.add('breathing');
+                    setTimeout(() => dragon.classList.remove('breathing'), 1000);
+                }
+
+                // Put the speaker name and question text
                 document.getElementById('speaker-name').innerText = speaker;
                 document.getElementById('dialog-text').innerText = qData.q;
 
@@ -1148,13 +2329,22 @@
                 const container = document.getElementById('choices-container');
                 container.innerHTML = '';
 
-                // For each answer option create a button and attach an onclick handler that passes the option index.
+                // Show choices with staggered animation
                 qData.options.forEach((opt, idx) => {
                     const btn = document.createElement('button');
-                    btn.className = 'choice-btn'; // Use choice button styles.
-                    btn.innerText = opt; // Show the option text.
-                    btn.onclick = () => this.handleAnswer(idx); // When clicked, call handleAnswer with the chosen index.
-                    container.appendChild(btn); // Add the button to the choices container.
+                    btn.className = 'choice-btn';
+                    btn.innerText = opt;
+                    btn.onclick = () => this.handleAnswer(idx);
+                    btn.style.opacity = '0';
+                    btn.style.transform = 'translateY(20px)';
+                    container.appendChild(btn);
+                    
+                    // Animate button appearance
+                    setTimeout(() => {
+                        btn.style.transition = 'all 0.3s ease';
+                        btn.style.opacity = '1';
+                        btn.style.transform = 'translateY(0)';
+                    }, idx * 100);
                 });
             },
 
@@ -1164,7 +2354,31 @@
                 const qData = levelData.questions[this.qIndex];
 
                 if (selectedIndex === qData.a) {
-                    // Correct answer branch.
+                    // Show correct answer feedback
+                    this.showAnswerFeedback('✓ CORRECT!', 'correct');
+                    
+                    // Enhanced correct answer effects
+                    const mac = document.getElementById('mac');
+                    mac.classList.add('victory');
+                    
+                    // Add brain storm effect
+                    const brainStorm = document.createElement('div');
+                    brainStorm.className = 'brain-storm';
+                    mac.appendChild(brainStorm);
+                    setTimeout(() => {
+                        if (brainStorm.parentNode) {
+                            brainStorm.parentNode.removeChild(brainStorm);
+                        }
+                    }, 1500);
+                    
+                    // Create time ripples
+                    this.createTimeRipple();
+                    
+                    // Add dynamic lighting
+                    this.addDynamicLighting();
+                    
+                    setTimeout(() => mac.classList.remove('victory'), 1000);
+                    
                     this.rewardPlayer(); // Give a collectible item.
                     this.qIndex++; // Move to the next question in this level.
 
@@ -1185,12 +2399,28 @@
                         }
                     } else {
                         // If there are more questions, show the next one after a short delay.
-                        setTimeout(() => this.showQuestion(), 1000); // 1 second delay for pacing.
+                        setTimeout(() => this.showQuestion(), 1000);
                     }
                 } else {
-                    // Wrong answer branch.
-                    this.setDialog("Mac", "That's not right! Think back to the mission logs!", ["Try Again"]);
-                    this.state = 'retry'; // Mark state so clicking the button will retry the question.
+                    // Show incorrect answer feedback
+                    this.showAnswerFeedback('✗ INCORRECT', 'incorrect');
+                    
+                    // Enhanced wrong answer effects
+                    const mac = document.getElementById('mac');
+                    mac.classList.add('thinking');
+                    
+                    // Create dimensional tear effect
+                    this.createDimensionalTear();
+                    
+                    // Environmental reaction for wrong answer
+                    this.createEnvironmentalReaction('volcano');
+                    
+                    setTimeout(() => mac.classList.remove('thinking'), 1500);
+                    
+                    setTimeout(() => {
+                        this.setDialog("Mac", "That's not right! Think back to the mission logs!", ["Try Again"]);
+                        this.state = 'retry';
+                    }, 1000);
                 }
             },
 
@@ -1200,35 +2430,98 @@
                 // Add the item to the player's inventory array.
                 this.inventory.push(item);
 
-                // Update the visual HUD by creating a new slot element and inserting the emoji.
-                const invBox = document.getElementById('inventory-box');
-                const slot = document.createElement('div');
-                slot.className = 'item-slot';
-                slot.innerText = item; // Put the emoji inside the slot.
-                invBox.appendChild(slot); // Add the slot to the inventory box.
-
-                // Visual feedback: animate the Mac element to indicate success.
                 const mac = document.getElementById('mac');
-                mac.animate([
-                    { transform: 'translateY(0)' },
-                    { transform: 'translateY(-30px)' },
-                    { transform: 'translateY(0)' }
-                ], { duration: 300 });
+                
+                // Enhanced reward effects
+                this.createSparkleParticles(mac);
+                this.createKnowledgeFragments('Knowledge Gained!', mac);
+                
+                // Create energy streams to inventory
+                const invBox = document.getElementById('inventory-box');
+                this.createEnergyStreams(mac, invBox);
+                
+                // Add knowledge aura to Mac
+                mac.classList.add('knowledge-aura', 'powered-up');
+                setTimeout(() => {
+                    mac.classList.remove('knowledge-aura', 'powered-up');
+                }, 2000);
+
+                // Update the visual HUD with enhanced effects
+                const slot = document.createElement('div');
+                slot.className = 'item-slot new-item energy-charged';
+                slot.innerText = item;
+                invBox.appendChild(slot);
+                
+                // Create skill badge
+                this.createSkillBadge('🎓', { x: 60, y: -40 });
+                
+                // Environmental reaction
+                this.createEnvironmentalReaction('crystal');
+                
+                // Remove animation classes after animation completes
+                setTimeout(() => {
+                    slot.classList.remove('new-item');
+                    setTimeout(() => slot.classList.remove('energy-charged'), 3000);
+                }, 600);
             },
 
             startBossBattle: function () {
-                // Hide normal opponent area and slide the dragon boss into view.
-                document.getElementById('opponent').classList.add('hidden'); // Hide normal opponents
-                const dragon = document.getElementById('dragon');
-                dragon.style.right = "50px"; // Slide dragon in from right by changing `right` property.
+                // Create dramatic time portal for boss entrance
+                this.createTimePortal();
+                
+                // Add volumetric rays effect
+                const gameScene = document.getElementById('game-scene');
+                const rays = document.createElement('div');
+                rays.className = 'volumetric-rays';
+                gameScene.appendChild(rays);
+                
+                setTimeout(() => {
+                    // Hide normal opponent area and slide the dragon boss into view.
+                    document.getElementById('opponent').classList.add('hidden');
+                    const dragon = document.getElementById('dragon');
+                    dragon.classList.add('boss-active'); // Make dragon visible
+                    dragon.style.right = "50px";
+                    
+                    // Enhanced boss entrance effects
+                    dragon.classList.add('breathing');
+                    
+                    // Create multiple time ripples
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => this.createTimeRipple(), i * 300);
+                    }
+                    
+                    // Environmental reaction - all elements
+                    this.createEnvironmentalReaction('volcano');
+                    this.createEnvironmentalReaction('crystal');
+                    
+                    // Add dynamic lighting
+                    this.addDynamicLighting();
+                    
+                    setTimeout(() => dragon.classList.remove('breathing'), 1000);
 
-                // Use the boss background and label the HUD as FINAL BOSS.
-                document.getElementById('game-scene').style.background = levels[3].bg;
-                document.getElementById('level-display').innerText = "FINAL BOSS";
+                    // Use the boss background with enhanced alien planet atmosphere
+                    gameScene.style.background = `${levels[3].bg}, radial-gradient(ellipse at center bottom, rgba(139, 0, 0, 0.4) 0%, transparent 70%)`;
+                    
+                    // Make dialog box important
+                    const dialogBox = document.getElementById('dialog-box');
+                    dialogBox.classList.add('important');
+                    
+                    const levelDisplay = document.getElementById('level-display');
+                    levelDisplay.classList.add('level-update');
+                    levelDisplay.innerText = "FINAL BOSS";
+                    setTimeout(() => levelDisplay.classList.remove('level-update'), 800);
 
-                // Set an initial dialog for the boss and update state so the next button shows boss questions.
-                this.setDialog("The Dragon", "ROAR! I hold the Mystic Gem! You carry many trinkets, but do you possess KNOWLEDGE?", ["Face the Dragon"]);
-                this.state = 'boss-start';
+                    // Set an initial dialog for the boss
+                    this.setDialog("The Dragon", "ROAR! I hold the Mystic Gem! You carry many trinkets, but do you possess KNOWLEDGE?", ["Face the Dragon"]);
+                    this.state = 'boss-start';
+                    
+                    // Remove volumetric rays after entrance
+                    setTimeout(() => {
+                        if (rays.parentNode) {
+                            rays.parentNode.removeChild(rays);
+                        }
+                    }, 3000);
+                }, 1000);
             },
 
             damageBoss: function () {
@@ -1252,30 +2545,37 @@
             },
 
             winGame: function () {
-                // Hide the main game scene and HUD, then reveal the victory screen.
-                document.getElementById('game-scene').classList.add('hidden');
-                document.getElementById('hud').classList.add('hidden');
-                document.getElementById('victory-screen').classList.remove('hidden');
+                // Create final victory portal effect
+                this.createTimePortal();
+                
+                setTimeout(() => {
+                    // Hide the main game scene and HUD, then reveal the victory screen.
+                    document.getElementById('game-scene').classList.add('hidden');
+                    document.getElementById('hud').classList.add('hidden');
+                    document.getElementById('victory-screen').classList.remove('hidden');
 
-                // Populate the final treasures area with the inventory items collected.
-                const treasureContainer = document.getElementById('final-treasures');
-                treasureContainer.innerHTML = ''; // clear any old content just in case.
-                this.inventory.forEach(item => {
-                    const span = document.createElement('span');
-                    span.className = 'final-item';
-                    span.innerText = item;
-                    treasureContainer.appendChild(span);
-                });
+                    // Populate the final treasures area with the inventory items collected.
+                    const treasureContainer = document.getElementById('final-treasures');
+                    treasureContainer.innerHTML = '';
+                    this.inventory.forEach(item => {
+                        const span = document.createElement('span');
+                        span.className = 'final-item';
+                        span.innerText = item;
+                        treasureContainer.appendChild(span);
+                    });
 
-                // Prepare the spaceship element for a controlled landing animation.
-                const ship = document.getElementById('mac-spaceship');
-                ship.style.transform = '';
-                ship.style.transition = '';
-                // ensure left is set in pixels for animation calculations
-                ship.style.left = (ship.offsetLeft) + 'px';
+                    // Show victory effects
+                    this.showVictoryEffects();
 
-                // Start controlled movement to land the ship close to the planet.
-                this.startShipLandingToOffset(1); // 1 pixel away from the planet.
+                    // Prepare the spaceship element for a controlled landing animation.
+                    const ship = document.getElementById('mac-spaceship');
+                    ship.style.transform = '';
+                    ship.style.transition = '';
+                    ship.style.left = (ship.offsetLeft) + 'px';
+
+                    // Start controlled movement to land the ship close to the planet.
+                    this.startShipLandingToOffset(1);
+                }, 1000);
             },
 
             /* Move the mac-spaceship horizontally until it is `offsetPx` pixels away from the home-planet */
@@ -1339,22 +2639,202 @@
                 requestAnimationFrame(animate);
             },
 
-            // Handling the dialog flow
+            // Enhanced dialog system with typewriter effect
             setDialog: function (name, text, buttons) {
-                // Update speaker name and dialog text in the dialog box.
+                // Update speaker name
                 document.getElementById('speaker-name').innerText = name;
-                document.getElementById('dialog-text').innerText = text;
+                
+                // Clear any old choice buttons.
                 const container = document.getElementById('choices-container');
                 container.innerHTML = '';
+                
+                // Start typewriter effect for dialog text
+                this.typewriterText(text, buttons);
+            },
 
-                // For each provided button text, create a button element that calls advanceState when clicked.
-                buttons.forEach(btnText => {
-                    const btn = document.createElement('button');
-                    btn.className = 'choice-btn';
-                    btn.innerText = btnText;
-                    btn.onclick = () => this.advanceState();
-                    container.appendChild(btn);
+            typewriterText: function (text, buttons) {
+                const dialogElement = document.getElementById('dialog-text');
+                dialogElement.innerHTML = '';
+                
+                let index = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'typewriter-cursor';
+                dialogElement.appendChild(cursor);
+                
+                const typeInterval = setInterval(() => {
+                    if (index < text.length) {
+                        const char = text.charAt(index);
+                        const textNode = document.createTextNode(char);
+                        dialogElement.insertBefore(textNode, cursor);
+                        index++;
+                        
+                        // Add slight delay after punctuation for better readability
+                        if (char === '.' || char === '!' || char === '?') {
+                            setTimeout(() => {}, 200);
+                        }
+                    } else {
+                        clearInterval(typeInterval);
+                        cursor.remove();
+                        
+                        // Show buttons after text is complete
+                        setTimeout(() => {
+                            this.showChoiceButtons(buttons);
+                        }, 300);
+                    }
+                }, 30); // Adjust speed for readability
+            },
+
+            showChoiceButtons: function (buttons) {
+                const container = document.getElementById('choices-container');
+                
+                buttons.forEach((btnText, index) => {
+                    setTimeout(() => {
+                        const btn = document.createElement('button');
+                        btn.className = 'choice-btn';
+                        btn.innerText = btnText;
+                        btn.onclick = () => this.advanceState();
+                        btn.style.opacity = '0';
+                        btn.style.transform = 'translateY(20px)';
+                        container.appendChild(btn);
+                        
+                        // Animate button appearance
+                        setTimeout(() => {
+                            btn.style.transition = 'all 0.3s ease';
+                            btn.style.opacity = '1';
+                            btn.style.transform = 'translateY(0)';
+                        }, 50);
+                    }, index * 100);
                 });
+            },
+
+            createSparkleParticles: function (targetElement) {
+                const rect = targetElement.getBoundingClientRect();
+                const gameContainer = document.getElementById('game-container');
+                const containerRect = gameContainer.getBoundingClientRect();
+                
+                for (let i = 0; i < 6; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'sparkle-particle';
+                    particle.innerText = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
+                    
+                    const x = rect.left - containerRect.left + Math.random() * rect.width;
+                    const y = rect.top - containerRect.top + Math.random() * rect.height;
+                    
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.animationDelay = (i * 0.1) + 's';
+                    
+                    gameContainer.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 1000);
+                }
+            },
+
+            createTimePortal: function () {
+                const gameScene = document.getElementById('game-scene');
+                const portal = document.createElement('div');
+                portal.className = 'time-portal';
+                gameScene.appendChild(portal);
+                
+                setTimeout(() => {
+                    if (portal.parentNode) {
+                        portal.parentNode.removeChild(portal);
+                    }
+                }, 2000);
+            },
+
+            createAlienPlanetElements: function () {
+                const gameScene = document.getElementById('game-scene');
+                
+                // Create volcanoes with specific positioning
+                const volcanoes = [
+                    { emoji: '🌋', left: '5%', top: '15%', size: '40px', delay: '0s' },
+                    { emoji: '🌋', right: '8%', top: '35%', size: '55px', delay: '2s' },
+                    { emoji: '🌋', left: '75%', top: '55%', size: '35px', delay: '1s' },
+                    { emoji: '🌋', right: '65%', top: '75%', size: '48px', delay: '3s' }
+                ];
+                volcanoes.forEach((volcano, index) => {
+                    const volcanoEl = document.createElement('div');
+                    volcanoEl.className = 'alien-volcano';
+                    volcanoEl.innerText = volcano.emoji;
+                    volcanoEl.style.fontSize = volcano.size;
+                    volcanoEl.style.top = volcano.top;
+                    volcanoEl.style.animationDelay = volcano.delay;
+                    if (volcano.left) volcanoEl.style.left = volcano.left;
+                    if (volcano.right) volcanoEl.style.right = volcano.right;
+                    gameScene.appendChild(volcanoEl);
+                });
+                
+                // Create alien rocks with specific positioning
+                const rocks = [
+                    { emoji: '🪨', left: '15%', top: '20%', size: '25px', delay: '0s' },
+                    { emoji: '🗿', left: '40%', top: '45%', size: '40px', delay: '3s' },
+                    { emoji: '🪨', right: '20%', top: '25%', size: '32px', delay: '1.5s' },
+                    { emoji: '⛰️', right: '45%', top: '60%', size: '28px', delay: '4s' },
+                    { emoji: '🪨', left: '65%', top: '80%', size: '35px', delay: '2s' },
+                    { emoji: '🗿', right: '80%', top: '40%', size: '22px', delay: '5s' }
+                ];
+                rocks.forEach((rock, index) => {
+                    const rockEl = document.createElement('div');
+                    rockEl.className = 'alien-rock';
+                    rockEl.innerText = rock.emoji;
+                    rockEl.style.fontSize = rock.size;
+                    rockEl.style.top = rock.top;
+                    rockEl.style.animationDelay = rock.delay;
+                    if (rock.left) rockEl.style.left = rock.left;
+                    if (rock.right) rockEl.style.right = rock.right;
+                    gameScene.appendChild(rockEl);
+                });
+                
+                // Create alien crystals with specific positioning
+                const crystals = [
+                    { emoji: '💎', left: '25%', top: '30%', size: '32px', delay: '0s' },
+                    { emoji: '🔮', right: '30%', top: '50%', size: '25px', delay: '1.5s' },
+                    { emoji: '💎', left: '85%', top: '70%', size: '20px', delay: '0.8s' },
+                    { emoji: '🔮', right: '55%', top: '20%', size: '35px', delay: '2.2s' },
+                    { emoji: '💎', left: '50%', top: '10%', size: '24px', delay: '1.2s' }
+                ];
+                crystals.forEach((crystal, index) => {
+                    const crystalEl = document.createElement('div');
+                    crystalEl.className = 'alien-crystal';
+                    crystalEl.innerText = crystal.emoji;
+                    crystalEl.style.fontSize = crystal.size;
+                    crystalEl.style.top = crystal.top;
+                    crystalEl.style.animationDelay = crystal.delay;
+                    if (crystal.left) crystalEl.style.left = crystal.left;
+                    if (crystal.right) crystalEl.style.right = crystal.right;
+                    gameScene.appendChild(crystalEl);
+                });
+                
+                // Create floating particles
+                this.startAlienParticles();
+            },
+
+            startAlienParticles: function () {
+                const gameScene = document.getElementById('game-scene');
+                const particles = ['✨', '💫', '🌟', '⭐', '💥'];
+                
+                setInterval(() => {
+                    if (Math.random() < 0.3) { // 30% chance every interval
+                        const particle = document.createElement('div');
+                        particle.className = 'alien-particle';
+                        particle.innerText = particles[Math.floor(Math.random() * particles.length)];
+                        particle.style.left = Math.random() * 80 + 10 + '%';
+                        particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                        gameScene.appendChild(particle);
+                        
+                        // Remove particle after animation
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.parentNode.removeChild(particle);
+                            }
+                        }, 10000);
+                    }
+                }, 2000);
             },
 
             advanceState: function () {
@@ -1370,6 +2850,238 @@
                 } else if (this.state === 'boss-start') {
                     this.showQuestion();
                 }
+            },
+
+            showAnswerFeedback: function (text, type) {
+                const gameScene = document.getElementById('game-scene');
+                const feedback = document.createElement('div');
+                feedback.className = `answer-feedback answer-${type}`;
+                feedback.innerText = text;
+                gameScene.appendChild(feedback);
+                
+                setTimeout(() => {
+                    if (feedback.parentNode) {
+                        feedback.parentNode.removeChild(feedback);
+                    }
+                }, 1500);
+            },
+
+            showAchievement: function (text) {
+                const achievement = document.createElement('div');
+                achievement.className = 'achievement-popup';
+                achievement.innerText = text;
+                document.body.appendChild(achievement);
+                
+                setTimeout(() => {
+                    if (achievement.parentNode) {
+                        achievement.parentNode.removeChild(achievement);
+                    }
+                }, 3000);
+            },
+
+            showLoadingSpinner: function () {
+                const gameScene = document.getElementById('game-scene');
+                const spinner = document.createElement('div');
+                spinner.className = 'loading-spinner';
+                spinner.id = 'loading-spinner';
+                gameScene.appendChild(spinner);
+            },
+
+            hideLoadingSpinner: function () {
+                const spinner = document.getElementById('loading-spinner');
+                if (spinner && spinner.parentNode) {
+                    spinner.parentNode.removeChild(spinner);
+                }
+            },
+
+            initCursorTrail: function () {
+                let mouseX = 0, mouseY = 0;
+                
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    
+                    // Create enhanced trail particle
+                    if (Math.random() < 0.3) { // 30% chance
+                        const trail = document.createElement('div');
+                        trail.className = 'gesture-trail';
+                        trail.style.left = mouseX + 'px';
+                        trail.style.top = mouseY + 'px';
+                        document.body.appendChild(trail);
+                        
+                        setTimeout(() => {
+                            if (trail.parentNode) {
+                                trail.parentNode.removeChild(trail);
+                            }
+                        }, 1000);
+                    }
+                });
+                
+                // Add contextual cursor effects
+                document.addEventListener('mouseover', (e) => {
+                    if (e.target.classList.contains('choice-btn') || e.target.classList.contains('btn')) {
+                        e.target.classList.add('contextual-cursor');
+                    }
+                });
+            },
+
+            createKnowledgeFragments: function (text, targetElement) {
+                const rect = targetElement.getBoundingClientRect();
+                const gameContainer = document.getElementById('game-container');
+                const containerRect = gameContainer.getBoundingClientRect();
+                
+                const words = text.split(' ').slice(0, 3); // Take first 3 words
+                
+                words.forEach((word, index) => {
+                    const fragment = document.createElement('div');
+                    fragment.className = 'knowledge-fragment';
+                    fragment.innerText = word;
+                    
+                    const x = rect.left - containerRect.left + Math.random() * rect.width;
+                    const y = rect.top - containerRect.top + Math.random() * rect.height;
+                    
+                    fragment.style.left = x + 'px';
+                    fragment.style.top = y + 'px';
+                    fragment.style.animationDelay = (index * 0.2) + 's';
+                    
+                    gameContainer.appendChild(fragment);
+                    
+                    setTimeout(() => {
+                        if (fragment.parentNode) {
+                            fragment.parentNode.removeChild(fragment);
+                        }
+                    }, 3000);
+                });
+            },
+
+            createEnergyStreams: function (fromElement, toElement) {
+                const fromRect = fromElement.getBoundingClientRect();
+                const toRect = toElement.getBoundingClientRect();
+                const gameContainer = document.getElementById('game-container');
+                const containerRect = gameContainer.getBoundingClientRect();
+                
+                for (let i = 0; i < 5; i++) {
+                    const stream = document.createElement('div');
+                    stream.className = 'energy-stream';
+                    
+                    const startX = fromRect.left - containerRect.left + fromRect.width / 2;
+                    const startY = fromRect.top - containerRect.top + fromRect.height / 2;
+                    
+                    stream.style.left = startX + 'px';
+                    stream.style.top = startY + 'px';
+                    stream.style.animationDelay = (i * 0.1) + 's';
+                    
+                    const angle = Math.atan2(
+                        (toRect.top - containerRect.top) - startY,
+                        (toRect.left - containerRect.left) - startX
+                    ) * 180 / Math.PI;
+                    
+                    stream.style.transform = `rotate(${angle}deg)`;
+                    
+                    gameContainer.appendChild(stream);
+                    
+                    setTimeout(() => {
+                        if (stream.parentNode) {
+                            stream.parentNode.removeChild(stream);
+                        }
+                    }, 1000);
+                }
+            },
+
+            createSkillBadge: function (skill, position) {
+                const mac = document.getElementById('mac');
+                const badge = document.createElement('div');
+                badge.className = 'skill-badge';
+                badge.innerText = skill;
+                
+                badge.style.left = position.x + 'px';
+                badge.style.top = position.y + 'px';
+                
+                const mastery = document.createElement('div');
+                mastery.className = 'mastery-glow';
+                badge.appendChild(mastery);
+                
+                mac.appendChild(badge);
+                
+                setTimeout(() => {
+                    if (badge.parentNode) {
+                        badge.parentNode.removeChild(badge);
+                    }
+                }, 3000);
+            },
+
+            createEnvironmentalReaction: function (type) {
+                const elements = document.querySelectorAll(`.alien-${type}`);
+                elements.forEach(element => {
+                    element.classList.add('reactive');
+                    setTimeout(() => {
+                        element.classList.remove('reactive');
+                    }, 1000);
+                });
+            },
+
+            createDimensionalTear: function () {
+                const gameScene = document.getElementById('game-scene');
+                const tear = document.createElement('div');
+                tear.className = 'dimensional-tear';
+                
+                tear.style.left = Math.random() * 80 + 10 + '%';
+                tear.style.top = Math.random() * 60 + 20 + '%';
+                
+                gameScene.appendChild(tear);
+                
+                setTimeout(() => {
+                    if (tear.parentNode) {
+                        tear.parentNode.removeChild(tear);
+                    }
+                }, 500);
+            },
+
+            addDynamicLighting: function () {
+                const gameScene = document.getElementById('game-scene');
+                const light = document.createElement('div');
+                light.className = 'dynamic-light';
+                
+                light.style.left = Math.random() * 70 + 15 + '%';
+                light.style.top = Math.random() * 50 + 25 + '%';
+                
+                gameScene.appendChild(light);
+                
+                setTimeout(() => {
+                    if (light.parentNode) {
+                        light.parentNode.removeChild(light);
+                    }
+                }, 4000);
+            },
+
+            createTimeRipple: function () {
+                const gameScene = document.getElementById('game-scene');
+                const ripple = document.createElement('div');
+                ripple.className = 'time-ripple';
+                gameScene.appendChild(ripple);
+                
+                setTimeout(() => {
+                    if (ripple.parentNode) {
+                        ripple.parentNode.removeChild(ripple);
+                    }
+                }, 2000);
+            },
+
+            showVictoryEffects: function () {
+                const mac = document.getElementById('mac');
+                
+                // Create multiple sparkle bursts
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => this.createSparkleParticles(mac), i * 500);
+                }
+                
+                // Animate final treasures
+                setTimeout(() => {
+                    const treasures = document.querySelectorAll('.final-item');
+                    treasures.forEach((treasure, index) => {
+                        treasure.style.animationDelay = (index * 0.2) + 's';
+                    });
+                }, 1000);
             }
         };
 
